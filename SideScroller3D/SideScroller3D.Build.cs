@@ -1,0 +1,32 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class SideScroller3D : ModuleRules
+{
+	public SideScroller3D(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		// Core dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "XRBase", "Landscape" });
+
+		// Gameplay Ability System
+		PublicDependencyModuleNames.AddRange(new string[] { "GameplayAbilities", "GameplayTags", "GameplayTasks"});
+		
+		// Slate dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore",});
+		
+		// EOS dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "Networking", "Sockets", "OnlineSubsystemEOS" });
+		
+		// Ai dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "AIModule" });
+
+		// Hud dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "NavigationSystem" });
+
+		// Widget dependencies
+		PublicDependencyModuleNames.AddRange(new string[] { "UMG", "MoviePlayer" });
+	}
+}
