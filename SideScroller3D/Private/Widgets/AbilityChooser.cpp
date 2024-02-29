@@ -6,7 +6,7 @@
 void UAbilityChooser::NativeConstruct()
 {
     Super::NativeConstruct();
-   UsedAbilityPointsTextArray.Empty();
+     UsedAbilityPointsTextArray.Empty();
     InitializeButtonArray(ButtonPreFixes[0], OffensiveAbilityButtons);
     InitializeButtonArray(ButtonPreFixes[1], DefensiveAbilityButtons);
     InitializeButtonArray(ButtonPreFixes[2], AttackAbilityButtons);
@@ -32,21 +32,23 @@ void UAbilityChooser::UpdateAbilityDisplay()
 {
     if (OwnerAbilityUnit)
     {
+        UE_LOG(LogTemp, Log, TEXT("Found OwnerAbilityUnit!"));
+        UE_LOG(LogTemp, Log, TEXT("Text D : %d"), static_cast<int32>(OwnerAbilityUnit->DefensiveAbilityID));
         if (OffensiveAbilityText)
         {
-            OffensiveAbilityText->SetText(FText::FromString(GetEnumValueAsString("EGASAbilityInputID", static_cast<int32>(OwnerAbilityUnit->OffensiveAbilityID))));
+            OffensiveAbilityText->SetText(FText::FromString(FString::FromInt(static_cast<int32>(OwnerAbilityUnit->OffensiveAbilityID))));
         }
         if (DefensiveAbilityText)
         {
-            DefensiveAbilityText->SetText(FText::FromString(GetEnumValueAsString("EGASAbilityInputID", static_cast<int32>(OwnerAbilityUnit->DefensiveAbilityID))));
+            DefensiveAbilityText->SetText(FText::FromString(FString::FromInt(static_cast<int32>(OwnerAbilityUnit->DefensiveAbilityID))));
         }
         if (AttackAbilityText)
         {
-            AttackAbilityText->SetText(FText::FromString(GetEnumValueAsString("EGASAbilityInputID", static_cast<int32>(OwnerAbilityUnit->AttackAbilityID))));
+            AttackAbilityText->SetText(FText::FromString(FString::FromInt(static_cast<int32>(OwnerAbilityUnit->AttackAbilityID))));
         }
         if (ThrowAbilityText)
         {
-            ThrowAbilityText->SetText(FText::FromString(GetEnumValueAsString("EGASAbilityInputID", static_cast<int32>(OwnerAbilityUnit->ThrowAbilityID))));
+            ThrowAbilityText->SetText(FText::FromString(FString::FromInt(static_cast<int32>(OwnerAbilityUnit->ThrowAbilityID))));
         }
         
         if (AvailableAbilityPointsText)

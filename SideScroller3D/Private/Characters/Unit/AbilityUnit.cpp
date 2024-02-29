@@ -21,7 +21,7 @@ void AAbilityUnit::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	GetAbilitiesArrays();
-	AutoAbility();
+	//AutoAbility();
 }
 
 void AAbilityUnit::LevelUp_Implementation()

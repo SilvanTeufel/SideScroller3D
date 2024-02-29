@@ -402,19 +402,64 @@ bool AExtendedUnitBase::TabNextUnitToChase()
 	if(!UnitsToChase.Num()) return false;
 		
 	
-	int NewIndex = 0;
+	//int NewIndex = 0;
 	bool RValue = false;
+
+	UE_LOG(LogTemp, Warning, TEXT("UnitsToChase.Num(): %d"), UnitsToChase.Num());
+	if(UnitToChaseIndex >= UnitsToChase.Num()-1)
+		UnitToChaseIndex = 0;
 	
-	for(int i = 0; i < UnitsToChase.Num(); i++)
+	for(int i = UnitToChaseIndex; i < UnitsToChase.Num(); i++)
 	{
-		if(UnitsToChase[i] && UnitsToChase[i]->UnitIndex != UnitToChase->UnitIndex && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
+		if(UnitsToChase[i] && UnitsToChase[i] != UnitToChase && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
 		{
 				UE_LOG(LogTemp, Warning, TEXT("Tabbed to the Next Unit!"));
+				UnitToChaseIndex = i;
 				UnitToChase->SetDeselected();
-				UnitToChase = UnitsToChase[NewIndex];
+				UnitToChase = UnitsToChase[UnitToChaseIndex];
 				UnitToChase->SetSelected();
 				RValue = true;
 				break;
+		}
+	}
+	
+	TArray <AUnitBase*> UnitsToDelete = UnitsToChase;
+	
+	for(int i = 0; i < UnitsToDelete.Num(); i++)
+	{
+		if(UnitsToDelete[i] && UnitsToDelete[i]->GetUnitState() == UnitData::Dead)
+		{
+			UnitsToChase.Remove(UnitsToDelete[i]);
+		}
+	}
+
+	return RValue;
+}
+
+
+bool AExtendedUnitBase::TabPrevUnitToChase()
+{
+	if(!UnitsToChase.Num()) return false;
+		
+	
+	//int NewIndex = 0;
+	bool RValue = false;
+
+	UE_LOG(LogTemp, Warning, TEXT("UnitsToChase.Num(): %d"), UnitsToChase.Num());
+	if(UnitToChaseIndex <= 0)
+		UnitToChaseIndex = UnitsToChase.Num()-1;
+	
+	for(int i = UnitToChaseIndex; i >= 0; i--)
+	{
+		if(UnitsToChase[i] && UnitsToChase[i] != UnitToChase && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Tabbed to the Next Unit!"));
+			UnitToChaseIndex = i;
+			UnitToChase->SetDeselected();
+			UnitToChase = UnitsToChase[UnitToChaseIndex];
+			UnitToChase->SetSelected();
+			RValue = true;
+			break;
 		}
 	}
 	

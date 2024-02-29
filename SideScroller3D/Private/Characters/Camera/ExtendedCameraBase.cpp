@@ -392,7 +392,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		case 13:
 			{
 				// R Pressed
-				CameraControllerBase->RPressed();
+				//CameraControllerBase->RPressed();
 			} break;
 		case 14:
 			{
@@ -419,7 +419,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				{
 					FVector2D MousePosition;
 					CameraControllerBase->GetMousePosition(MousePosition.X, MousePosition.Y);
-					MousePosition.X += IValue*2; // Modify this formula as needed
+					MousePosition.X += IValue*4; // Modify this formula as needed
 					CameraControllerBase->SetMouseLocation(MousePosition.X, MousePosition.Y);
 					FindUButtonWithMouseHover();
 				}else
@@ -461,7 +461,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				{
 					FVector2D MousePosition;
 					CameraControllerBase->GetMousePosition(MousePosition.X, MousePosition.Y);
-					MousePosition.Y -= IValue*2; // Modify this formula as needed
+					MousePosition.Y -= IValue*4; // Modify this formula as needed
 					CameraControllerBase->SetMouseLocation(MousePosition.X, MousePosition.Y);
 					FindUButtonWithMouseHover();
 				}else
@@ -492,11 +492,11 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			} break;
 		case 22:
 			{
-				// Gamepad A
+				// Gamepad A Pressed
 				//CameraControllerBase->APressed();
 
-				UE_LOG(LogTemp, Warning, TEXT("True!"));
-				if(CameraControllerBase->LShoulder2Pressed)
+				//UE_LOG(LogTemp, Warning, TEXT("True!"));
+				if(CameraControllerBase->RShoulder2Pressed)
 				{
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 					{
@@ -512,7 +512,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 						}
 					}
 				}
-				else
+				if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
 				{
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 					{
@@ -526,17 +526,33 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			} break;
 		case 23:
 			{
-				// Gamepad A
+				// Gamepad A Released
 				CameraControllerBase->AReleased();
 				
 			} break;
 		case 24:
 			{
-				
+				// Gamepad B Pressed
+				if(CameraControllerBase->RShoulder2Pressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if(SelectedUnit)
+						{
+							AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(SelectedUnit);
+							if (ExtendedUnitBase)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("TabPrevUnitToChase!"));
+								ExtendedUnitBase->TabPrevUnitToChase();
+							}
+						}
+					}
+				}
 			} break;
 		case 25:
 			{
-				// Gamepad B
+				// Gamepad B Released
+				if(!CameraControllerBase->RShoulder2Pressed)
 				CameraControllerBase->EPressed();
 			} break;
 		case 26:
@@ -557,9 +573,23 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		case 28:
 			{
 				// Gamepad Y
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed"));
+		
+				
+				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed YYYY!!!!"));
 				CameraControllerBase->YIsPressed = true;
 
+				if(CameraControllerBase->RShoulder2Pressed)
+				{
+
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating DefensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(SelectedUnit->DefensiveAbilityID, SelectedUnit, SelectedUnit->DefensiveAbilities);
+						}
+					}
+				}
 				
 				//CameraControllerBase->QPressed();
 			} break;
@@ -567,26 +597,8 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
 				CameraControllerBase->YIsPressed = false;
-
-				if(CameraControllerBase->LShoulder2Pressed)
-				{
-					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
-					{
-						if (SelectedUnit)
-						{
-							if(!LevelWidgetToggled)
-							{
-								SetExtendedUserWidget(SelectedUnit);
-								LevelWidgetToggled = true;
-							}else if(LevelWidgetToggled)
-							{
-								SetExtendedUserWidget(nullptr);
-								LevelWidgetToggled = false;
-							}
-						}
-					}
-				}
-				else
+				
+				if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
 				{
 
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
@@ -657,18 +669,50 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				//  L Shoulder 2
 				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2"));
 				CameraControllerBase->LShoulder2Pressed = true;
+
+				if(!CameraControllerBase->RShoulder2Pressed)
+				for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+				{
+					if (SelectedUnit)
+					{
+						if(!LevelWidgetToggled)
+						{
+							SetExtendedUserWidget(SelectedUnit);
+							LevelWidgetToggled = true;
+						}
+					}
+				}
+				if(CameraControllerBase->RShoulder2Pressed && CameraControllerBase->LShoulder2Pressed )
+					CameraControllerBase->RPressed();
+			
 			} break;
 		case 333:
 			{
 				//  R Shoulder 2
 				UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2"));
 				CameraControllerBase->RShoulder2Pressed = true;
+				if(CameraControllerBase->RShoulder2Pressed && CameraControllerBase->LShoulder2Pressed )
+					CameraControllerBase->RPressed();
 			} break;
 		case 3222:
 			{
 				//  L Shoulder 2
 				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2 Released"));
 				CameraControllerBase->LShoulder2Pressed = false;
+
+				
+				for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+				{
+					if (SelectedUnit)
+					{
+						if(LevelWidgetToggled)
+						{
+							SetExtendedUserWidget(nullptr);
+							LevelWidgetToggled = false;
+						}
+					}
+				}
+				
 			} break;
 		case 3333:
 			{

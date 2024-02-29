@@ -93,13 +93,18 @@ void AUnitControllerBase::KillUnitBase(AUnitBase* UnitBase)
 void AUnitControllerBase::OnUnitDetected(const TArray<AActor*>& DetectedUnits)
 {
 	AUnitBase* CurrentUnit = Cast<AUnitBase>(GetPawn());
-	AUnitBase* DetectedUnit = Cast<AUnitBase>(DetectedUnits[0]);
-	
-	if(!DetectFriendlyUnits && DetectedUnit && CurrentUnit && (DetectedUnit->TeamId != CurrentUnit->TeamId)) 
+	//Loop through DetectedUnits instead!!
+	//AUnitBase* DetectedUnit = Cast<AUnitBase>(DetectedUnits[0]);
+	for (AActor* Actor  : DetectedUnits) // Loop through each detected unit
 	{
-		if(DetectedUnit->GetUnitState() != UnitData::Dead && CurrentUnit->GetUnitState() != UnitData::Dead)
+		AUnitBase* DetectedUnit = Cast<AUnitBase>(Actor);
+		if (!DetectedUnit) continue; // Skip if cast fails
+		
+		if(!DetectFriendlyUnits && DetectedUnit && CurrentUnit && (DetectedUnit->TeamId != CurrentUnit->TeamId)) 
 		{
-			DistanceToUnitToChase = GetPawn()->GetDistanceTo(DetectedUnit);
+			if(DetectedUnit->GetUnitState() != UnitData::Dead && CurrentUnit->GetUnitState() != UnitData::Dead)
+			{
+				//DistanceToUnitToChase = GetPawn()->GetDistanceTo(DetectedUnit);
 			
 				CurrentUnit->UnitsToChase.Emplace(DetectedUnit);
 				CurrentUnit->SetNextUnitToChase();
@@ -112,23 +117,24 @@ void AUnitControllerBase::OnUnitDetected(const TArray<AActor*>& DetectedUnits)
 					}
 				}
 			
-		}
-	}else if (DetectFriendlyUnits && DetectedUnit && CurrentUnit && (DetectedUnit->TeamId == CurrentUnit->TeamId)) {
-		if(DetectedUnit->GetUnitState() != UnitData::Dead && CurrentUnit->GetUnitState() != UnitData::Dead)
-		{
-			DistanceToUnitToChase = GetPawn()->GetDistanceTo(DetectedUnit);
-			
-			CurrentUnit->UnitsToChase.Emplace(DetectedUnit);
-			CurrentUnit->SetNextUnitToChase();
-				
-			if (CurrentUnit->UnitToChase) {
-				if(CurrentUnit->GetUnitState() != UnitData::Attack && CurrentUnit->GetUnitState() != UnitData::Run && CurrentUnit->UnitToChase->Attributes->GetHealth() < CurrentUnit->UnitToChase->Attributes->GetMaxHealth())
-				{
-					CurrentUnit->AddMovementInput(FVector(0.f), CurrentUnit->Attributes->GetRunSpeedScale());
-					CurrentUnit->SetUnitState(UnitData::Chase);
-				}
 			}
+		}else if (DetectFriendlyUnits && DetectedUnit && CurrentUnit && (DetectedUnit->TeamId == CurrentUnit->TeamId)) {
+			if(DetectedUnit->GetUnitState() != UnitData::Dead && CurrentUnit->GetUnitState() != UnitData::Dead)
+			{
+				//DistanceToUnitToChase = GetPawn()->GetDistanceTo(DetectedUnit);
 			
+				CurrentUnit->UnitsToChase.Emplace(DetectedUnit);
+				CurrentUnit->SetNextUnitToChase();
+				
+				if (CurrentUnit->UnitToChase) {
+					if(CurrentUnit->GetUnitState() != UnitData::Attack && CurrentUnit->GetUnitState() != UnitData::Run && CurrentUnit->UnitToChase->Attributes->GetHealth() < CurrentUnit->UnitToChase->Attributes->GetMaxHealth())
+					{
+						CurrentUnit->AddMovementInput(FVector(0.f), CurrentUnit->Attributes->GetRunSpeedScale());
+						CurrentUnit->SetUnitState(UnitData::Chase);
+					}
+				}
+			
+			}
 		}
 	}
 	
@@ -527,6 +533,10 @@ void AUnitControllerBase::Attack(AUnitBase* UnitBase, float DeltaSeconds)
 				UnitBase->LevelData.Experience++;
 
 				UnitBase->ServerMeeleImpactEvent();
+
+				AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(UnitBase->UnitToChase);
+
+				if(!ExtendedUnitBase)
 				UnitBase->UnitToChase->ActivateAbilityByInputID(UnitBase->UnitToChase->DefensiveAbilityID, UnitBase->UnitToChase->DefensiveAbilities);
 				
 				if (!UnitBase->UnitToChase->UnitsToChase.Contains(UnitBase))

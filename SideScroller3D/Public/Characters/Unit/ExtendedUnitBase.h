@@ -64,6 +64,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,  Category = SideScroller3D)
 		bool TabNextUnitToChase();
+
+	UFUNCTION(BlueprintCallable,  Category = SideScroller3D)
+		bool TabPrevUnitToChase();
 	
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "ActualWeaponId", Keywords = "SideScroller3D ActualWeaponId"), Category = SideScroller3D)
 		int ActualWeaponId = 1;
@@ -302,5 +305,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "YAxisFixedPosition", Keywords = "SideScroller3D YAxisFixedPosition"), Category = TopDownRTSCamLib)
 	float YAxisFixedPosition;
+
+	UPROPERTY(BlueprintReadWrite, Category = SideScroller3D)
+	int UnitToChaseIndex = 0;
 };
 
