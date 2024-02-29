@@ -10,26 +10,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Controller/CameraControllerBase.h"
 #include "Kismet/KismetMathLibrary.h"
-/*
-ACameraBase::ACameraBase(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
-{
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	CreateCameraComp();
-
-	if (RootComponent == nullptr) {
-		RootComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("Root"));
-	}
-
-	ControlWidgetComp = ObjectInitializer.CreateDefaultSubobject<UWidgetComponent>(this, TEXT("ControlWidget"));
-	ControlWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	
-	ActionWidgetComp = ObjectInitializer.CreateDefaultSubobject<UWidgetComponent>(this, TEXT("ActionWidgetComp"));
-	ActionWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-
-	SetActorEnableCollision(false);
-} */
 
 // Called when the game starts or when spawned
 void ACameraBase::BeginPlay()
@@ -50,10 +30,9 @@ void ACameraBase::BeginPlay()
 		}
 		
 	}
-	
-	SpawnControlWidget();
-	SpawnWeaponIndicator();
-	SpawnActionWidget();
+
+	SpringArm->TargetArmLength = DefaultSpringArmLength;
+	//SpawnWeaponIndicator();
 	ShowControlWidget();
 
 }
@@ -87,23 +66,6 @@ void ACameraBase::CreateCameraComp()
 }
 
 
-void ACameraBase::SpawnControlWidget()
-{
-	FTransform SpellTransform;
-	SpellTransform.SetLocation(FVector(500, 0, 0));
-	SpellTransform.SetRotation(FQuat(FRotator::ZeroRotator));
-
-
-	if (ControlWidgetComp) {
-		FRotator NewRotation = ControlWidgetRotation;
-		FQuat QuatRotation = FQuat(NewRotation);
-		ControlWidgetComp->SetRelativeRotation(QuatRotation, false, 0, ETeleportType::None);
-		ControlWidgetComp->SetRelativeLocation(ControlWidgetLocation);
-	}
-}
-
-
-
 void ACameraBase::PanMoveCamera(const FVector& NewPanDirection) {
 	if (NewPanDirection != FVector::ZeroVector) {
 		AddActorWorldOffset(NewPanDirection * GetActorLocation().Z * 0.001);
@@ -111,12 +73,17 @@ void ACameraBase::PanMoveCamera(const FVector& NewPanDirection) {
 }
 
 void ACameraBase::ZoomOut() {
-	AddActorWorldOffset(FVector(0, 0, 0.3) * CamSpeed);
+	if(SpringArm)
+		SpringArm->TargetArmLength += CamSpeed;
+	//AddActorWorldOffset(FVector(0, 0, 0.3) * CamSpeed);
 }
 
 void ACameraBase::ZoomIn() {
-	if(GetActorLocation().Z > 0.f)
-		AddActorWorldOffset(FVector(0, 0, -0.3) * CamSpeed);
+
+	if(SpringArm)
+		SpringArm->TargetArmLength -= CamSpeed;
+	//if(GetActorLocation().Z > 0.f)
+		//AddActorWorldOffset(FVector(0, 0, -0.3) * CamSpeed);
 }
 
 
@@ -270,30 +237,20 @@ void ACameraBase::LockOnUnit(AUnitBase* Unit)
 	if (Unit) {
 
 		const FVector SelectedActorLocation = Unit->GetActorLocation();
-		const FVector CurrentCameraPawnLocation = GetActorLocation();
 
 		FVector Velo = Unit->GetVelocity();
-		/*
-		if(abs(Velo.Z) == 0.f)
+		
+		//UE_LOG(LogTemp, Warning, TEXT("Velo.Z: %f"), Velo.Z);
+		if(Velo.Z == 0.f) SpringArm->TargetArmLength = DefaultSpringArmLength;
+		else
 		{
-			LastActorZeroPosition = SelectedActorLocation.Z;
-		}else if(Velo.Z > 100.f)
-		{
-			DeltaDecrementer = (SelectedActorLocation.Z - LastActorZeroPosition)/150.f;
+			float NewSpringArmLength = SpringArm->TargetArmLength += Velo.Z*0.005;
+			if(NewSpringArmLength <= DefaultSpringArmLength) SpringArm->TargetArmLength = DefaultSpringArmLength;
+			else  SpringArm->TargetArmLength = NewSpringArmLength;
 		}
-		else if(Velo.Z < 100.f)
-		{
-			LastActorZeroPosition += DeltaDecrementer;
-			LastActorZeroPosition >= SelectedActorLocation.Z? LastActorZeroPosition = SelectedActorLocation.Z : LastActorZeroPosition;
-		}*/
 		
-		float DeltaZ =  abs(SelectedActorLocation.Z - LastActorZeroPosition)*DeltaZScaler;
-		
-		const float CosYaw = FMath::Cos(YawValue*PI/180);
-		const float SinYaw = FMath::Sin(YawValue*PI/180);
-		const FVector NewPawnLocation = FVector(SelectedActorLocation.X+ZoomXYDistance*CosYaw-DeltaZ* 0.7*CosYaw, SelectedActorLocation.Y+ZoomXYDistance*SinYaw - DeltaZ*0.7*SinYaw,  SelectedActorLocation.Z+CamZOffset); // CurrentCameraPawnLocation.Z+CamZOffset
-		//const FVector NewPawnLocation =  FVector(SelectedActorLocation.X, SelectedActorLocation.Y,  SelectedActorLocation.Z);
-		SetActorLocation(SelectedActorLocation);
+		const FVector NewPawnLocation =  FVector(SelectedActorLocation.X, SelectedActorLocation.Y,  SelectedActorLocation.Z+CamZOffset);
+		SetActorLocation(NewPawnLocation);
 	
 	}
 }
@@ -316,13 +273,13 @@ bool ACameraBase::IsCharacterDistanceTooLow(float Distance, const FVector Select
 void ACameraBase::HideControlWidget()
 {
 	if (ControlWidgetComp)
-		ControlWidgetComp->SetRelativeLocation(ControlWidgetHideLocation);
+		ControlWidgetComp->SetVisibility(false);
 }
 
 void ACameraBase::ShowControlWidget()
 {
 	if (ControlWidgetComp)
-		ControlWidgetComp->SetRelativeLocation(ControlWidgetLocation);
+		ControlWidgetComp->SetVisibility(true);
 }
 
 void ACameraBase::JumpCamera(FHitResult Hit)
@@ -337,47 +294,6 @@ void ACameraBase::JumpCamera(FHitResult Hit)
 }
 
 
-void ACameraBase::MoveCamToForward()
-{
-	const float CosYaw = FMath::Cos(YawValue*PI/180);
-	const float SinYaw = FMath::Sin(YawValue*PI/180);
-	
-	const FVector NewPawnLocation = FVector(0.3*CosYaw,  0.3*SinYaw, 0);
-	
-	AddActorWorldOffset(NewPawnLocation * CamSpeed);
-}
-
-void ACameraBase::MoveCamToBackward()
-{
-	const float CosYaw = FMath::Cos(YawValue*PI/180);
-	const float SinYaw = FMath::Sin(YawValue*PI/180);
-	
-	const FVector NewPawnLocation = FVector(0.3*CosYaw*(-1),  0.3*SinYaw*(-1), 0);
-	
-	AddActorWorldOffset(NewPawnLocation * CamSpeed);
-}
-
-void ACameraBase::MoveCamToLeft()
-{
-
-	const float CosYaw = FMath::Cos(YawValue*PI/180);
-	const float SinYaw = FMath::Sin(YawValue*PI/180);
-	
-	const FVector NewPawnLocation = FVector(0.3*SinYaw,  0.3*CosYaw*(-1), 0);
-	
-	AddActorWorldOffset(NewPawnLocation * CamSpeed);
-}
-
-void ACameraBase::MoveCamToRight()
-{
-	const float CosYaw = FMath::Cos(YawValue*PI/180);
-	const float SinYaw = FMath::Sin(YawValue*PI/180);
-	
-	const FVector NewPawnLocation = FVector(0.3*SinYaw*(-1),  0.3*CosYaw, 0);
-	
-	AddActorWorldOffset(NewPawnLocation * CamSpeed);
-}
-
 
 void ACameraBase::SetUserWidget(AExtendedUnitBase* SelectedActor)
 {
@@ -390,28 +306,12 @@ void ACameraBase::SetUserWidget(AExtendedUnitBase* SelectedActor)
 
 void ACameraBase::ChangeWeaponIndicator(USkeletalMesh* NewWeaponMesh)
 {
+	if(UIWeaponIndicator)
 	UIWeaponIndicator->ChangeWeaponIndicator(NewWeaponMesh);
 }
 
+/*
 
-void ACameraBase::SpawnActionWidget()
-{
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.bNoFail = true;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	FTransform SpellTransform;
-	SpellTransform.SetLocation(FVector(500, 0, 0));
-	SpellTransform.SetRotation(FQuat(FRotator::ZeroRotator));
-
-	if (ActionWidgetComp) {
-		FRotator NewRotation = ActionWidgetRotation;
-		FQuat QuatRotation = FQuat(NewRotation);
-		ActionWidgetComp->SetRelativeRotation(QuatRotation, false, 0, ETeleportType::None);
-		ActionWidgetComp->SetRelativeLocation(ActionWidgetLocation);
-	}
-
-}
 void ACameraBase::SpawnWeaponIndicator()
 {
 	FActorSpawnParameters SpawnParams;
@@ -430,7 +330,7 @@ void ACameraBase::SpawnWeaponIndicator()
 		UIWeaponIndicator->SetActorScale3D(FVector(0.5f));
 	}
 }
-
+*/
 void ACameraBase::SetCameraState(TEnumAsByte<CameraData::CameraState> NewCameraState)
 {
 	CameraState = NewCameraState;
@@ -440,303 +340,3 @@ TEnumAsByte<CameraData::CameraState> ACameraBase::GetCameraState()
 {
 	return CameraState;
 }
-/*
-void ACameraBase::SwitchControllerStateMachine(const FInputActionValue& InputActionValue, int32 NewCameraState)
-{
-	ACameraControllerBase* CameraControllerBase = Cast<ACameraControllerBase>(GetController());
-	
-	if(CameraControllerBase)
-	{
-		if(!CameraControllerBase->IsStrgPressed)
-		switch (NewCameraState)
-		{
-		case 3:
-			{
-				CameraControllerBase->APressed();
-			}break;
-		case 7:
-			{
-				CameraControllerBase->ZoomInToPosition = false;
-				CameraControllerBase->ZoomOutToPosition = true;
-			} break;
-		case 8:
-			{
-				CameraControllerBase->ZoomInToPosition = true;
-				CameraControllerBase->ZoomOutToPosition = false;
-			} break;
-		case 9:
-			{
-				CameraControllerBase->CamIsRotatingLeft = false;
-				CameraControllerBase->CamIsRotatingRight = true;
-			} break;
-		case 10:
-			{
-
-				CameraControllerBase->CamIsRotatingRight = false;
-				CameraControllerBase->CamIsRotatingLeft = true;
-			} break;
-		case 19:
-			{
-				// Q Released
-				//CameraControllerBase->QReleased();
-			} break;
-		case 13:
-			{
-				// R Pressed
-				CameraControllerBase->RPressed();
-			} break;
-		case 14:
-			{
-				// F Pressed
-				// CameraControllerBase->FPressed();
-			} break;
-		case 15:
-			{
-				// C Pressed
-				// CameraControllerBase->CPressed();
-			} break;
-		case 16:
-			{
-				// S Pressed
-					CameraControllerBase->SReleased();
-			} break;
-		case 20:
-			{
-				// Joystick 1 X 
-				float IValue = InputActionValue.Get<float>();
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}
-				
-					
-				
-			} break;
-		case 21:
-			{
-				// Joystick 1 Y
-				
-				float IValue = InputActionValue.Get<float>();
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}
-				
-					
-				
-			} break;
-		case 22:
-			{
-				// Gamepad A
-				CameraControllerBase->APressed();
-				
-			} break;
-		case 23:
-			{
-				// Gamepad A
-				CameraControllerBase->AReleased();
-				
-			} break;
-		case 24:
-			{
-				// Gamepad B
-			} break;
-		case 25:
-			{
-				// Gamepad B
-				CameraControllerBase->EPressed();
-			} break;
-		case 26:
-			{
-				// Gamepad X
-				CameraControllerBase->CPressed();
-			} break;
-		case 27:
-			{
-				// Gamepad X
-			} break;
-		case 28:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed"));
-
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFive for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityFive, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-				CameraControllerBase->QPressed();
-			} break;
-		case 29:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
-				CameraControllerBase->QReleased();
-				
-			} break;
-		case 30:
-			{
-				// Joystick 2 X
-				UE_LOG(LogTemp, Warning, TEXT("Joystick 2 X"));
-				float FValue = InputActionValue.Get<float>();
-
-				if(FValue >= 1)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = true;
-				}
-				else if(FValue <= -1)
-				{
-					CameraControllerBase->CamIsRotatingRight = false;
-					CameraControllerBase->CamIsRotatingLeft = true;
-				}
-			} break;
-		case 31:
-			{
-				//  Joystick 2 Y
-				float FValue = InputActionValue.Get<float>();
-				
-				if(FValue >= 1)
-				{
-					CameraControllerBase->ZoomInToPosition = false;
-					CameraControllerBase->ZoomOutToPosition = true;
-				}else{
-					CameraControllerBase->ZoomInToPosition = true;
-					CameraControllerBase->ZoomOutToPosition = false;
-				}
-
-
-			} break;
-		case 32:
-			{
-				//  L Shoulder
-				CameraControllerBase->SetAxis();
-				SwitchAxis = !SwitchAxis;
-				CameraControllerBase->CamIsRotatingRight = false;
-				CameraControllerBase->CamIsRotatingLeft = true;
-	
-			} break;
-		case 33:
-			{
-				//  R Shoulder
-				CameraControllerBase->SetAxis();
-				SwitchAxis = !SwitchAxis;
-				CameraControllerBase->CamIsRotatingLeft = false;
-				CameraControllerBase->CamIsRotatingRight = true;
-			} break;
-		case 34:
-			{
-				// UE_LOG(LogTemp, Warning, TEXT("L Trigger Pressed"));
-				CameraControllerBase->SetDropJumpMine(true);
-			} break;
-		case 35:
-			{
-				// UE_LOG(LogTemp, Warning, TEXT("L Trigger Released"));
-				CameraControllerBase->SetDropJumpMine(false);
-			} break;
-		case 36:
-			{
-				ShowControlWidget();
-			} break;
-		case 37:
-			{
-				HideControlWidget();
-			} break;
-		case 38:
-			{
-				float IValue = -1.0f;
-
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}
-			} break;
-		case 39:
-			{
-				float IValue = 1.0f;
-				
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}
-				
-			} break;
-		case 40:
-			{
-				float IValue = 1.0f;
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}
-				
-			} break;
-		case 41:
-			{
-				float IValue = -1.0f;
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}
-				
-			} break;
-		}
-		
-	}
-
-}
-*/

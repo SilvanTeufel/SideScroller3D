@@ -66,7 +66,6 @@ void AExtendedCameraBase::BeginPlay()
 	// Call the base class BeginPlay
 	UE_LOG(LogTemp, Warning, TEXT("ExtendedCameraBase BEGINPLAY!!!!! "));
 	Super::BeginPlay();
-
 }
 
 // Tick implementation
@@ -131,6 +130,11 @@ void AExtendedCameraBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 32);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 33);
 
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 322);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 333);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 3222);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 3333);
+		
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 34);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 35);
 
@@ -154,6 +158,7 @@ void AExtendedCameraBase::SetExtendedUserWidget(AUnitBase* SelectedActor)
 
 	if(SelectedActor)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Visible Widget"));
 		if (TalentBar) {
 			TalentBar->SetVisibility(ESlateVisibility::Visible);
 			TalentBar->SetOwnerActor(SelectedActor);
@@ -167,6 +172,7 @@ void AExtendedCameraBase::SetExtendedUserWidget(AUnitBase* SelectedActor)
 		
 	}else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Collapsed Widget"));
 		TalentBar->SetVisibility(ESlateVisibility::Collapsed);
 		AbilityBar->SetVisibility(ESlateVisibility::Collapsed);
 	}
@@ -305,456 +311,44 @@ void AExtendedCameraBase::Input_Shift_Released(const FInputActionValue& InputAct
 		CameraControllerBase->ShiftReleased();
 	}
 }
-/*
-void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& InputActionValue, int32 NewCameraState)
+
+void AExtendedCameraBase::FindUButtonWithMouseHover()
 {
-	if(BlockControls) return;
-	
-	ACameraControllerBase* CameraControllerBase = Cast<ACameraControllerBase>(GetController());
-	
-	if(CameraControllerBase)
+
+	UTalentChooser* TalentBar = Cast<UTalentChooser>(TalentChooser->GetUserWidgetObject());
+	if (TalentBar)
 	{
-		if(CameraControllerBase->IsStrgPressed)
-			switch (NewCameraState)
-			{
-		case 0:
-			{
-
-			}break;
-		case 1:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->WIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 111:
-			{
-				CameraControllerBase->WIsPressedState = 2;
-			} break;
-		case 2:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->SIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 222:
-			{
-				CameraControllerBase->SIsPressedState = 2;
-			} break;
-		case 3:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->AIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 333:
-			{
-				CameraControllerBase->AIsPressedState = 2;
-			} break;
-		case 4:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->DIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 444:
-			{
-				CameraControllerBase->DIsPressedState = 2;
-			} break;
-		case 5:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-				{
-					if(!CameraControllerBase->HoldZoomOnLockedCharacter) CameraControllerBase->CamIsZoomingInState = 1;
-				
-					CameraControllerBase->HoldZoomOnLockedCharacter = !CameraControllerBase->HoldZoomOnLockedCharacter;
-				
-				} else
-				{
-					CameraControllerBase->CamIsZoomingInState = 1;
-					SetCameraState(CameraData::ZoomIn);
-				}
-			}
-				break;
-		case 555:
-			{
-					CameraControllerBase->CamIsZoomingInState = 2;
-			}
-			break;
-		case 6:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-				{
-					if(!CameraControllerBase->HoldZoomOnLockedCharacter) CameraControllerBase->CamIsZoomingOutState = 1;
-				
-					CameraControllerBase->HoldZoomOnLockedCharacter = !CameraControllerBase->HoldZoomOnLockedCharacter;
-				
-				} else
-				{
-					CameraControllerBase->CamIsZoomingOutState = 1;
-					SetCameraState(CameraData::ZoomOut);
-				}
-			}
-			break;
-		case 666:
-			{
-				CameraControllerBase->CamIsZoomingOutState = 2;
-			}
-			break;
-		case 7: SetCameraState(CameraData::ZoomOutPosition); break;
-		case 8: SetCameraState(CameraData::ZoomInPosition); break;
-		case 9:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-					return;
-				
-				SetCameraState(CameraData::RotateLeft);
-			} break;
-		case 10:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-					return;
-				
-				SetCameraState(CameraData::RotateRight);
-			} break;
-		case 11: SetCameraState(CameraData::LockOnCharacter); break;
-		case 12: SetCameraState(CameraData::ZoomToThirdPerson); break;
-		case 14:
-			{	SetCameraState(CameraData::OrbitAndMove); break;
-				//CameraControllerBase->OrbitAtLocation(FVector(1000.f, -1000.f, 500.f), 0.033f);
-			} break;
-		case 15:
-			{
-
-				CameraControllerBase->SpawnMissileRain(4, FVector(1000.f, -1000.f, 1000.f));
-				CameraControllerBase->SpawnEffectArea(3, FVector(1000.f, -1000.f, 10.f), FVector(5), CameraControllerBase->EffectAreaClass);
-			} break;
-		case 16:
-			{
-				float MouseX, MouseY;
-				CameraControllerBase->GetMousePosition(MouseX, MouseY);
-				PreviousMouseLocation.X = MouseX;
-				PreviousMouseLocation.Y = MouseY;
-
-				CameraControllerBase->MiddleMouseIsPressed = true;
-			} break;
-		case 17:
-			{
-				CameraControllerBase->MiddleMouseIsPressed = false;
-			} break;
-		case 21:
-			{
-				
-			} break;
-		case 22:
-			{
-				
-			} break;
-		case 23:
-			{
-				
-			} break;
-		case 24:
-			{
-				
-			} break;
-		case 25:
-			{
-				
-			} break;
-		case 26:
-			{
-				
-			} break;
-		default:
-			{
-				//SetCameraState(CameraData::UseScreenEdges);
-			}break;
-		}
-
-		if(!CameraControllerBase->IsStrgPressed)
-		switch (NewCameraState)
+		UButton* HitButton = TalentBar->GetButtonUnderCursor();
+		if (HitButton)
 		{
-		case 1:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->WIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 111:
-			{
-				CameraControllerBase->WIsPressedState = 2;
-			} break;
-		case 2:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->SIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 222:
-			{
-				CameraControllerBase->SIsPressedState = 2;
-			} break;
-		case 3:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->AIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 333:
-			{
-				CameraControllerBase->AIsPressedState = 2;
-			} break;
-		case 4:
-			{
-				if(GetCameraState() == CameraData::OrbitAndMove)
-				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = false;
-				}
-				
-				CameraControllerBase->DIsPressedState = 1;
-				CameraControllerBase->LockCameraToUnit = false;
-				SetCameraState(CameraData::MoveWASD);
-			} break;
-		case 444:
-			{
-				CameraControllerBase->DIsPressedState = 2;
-			} break;
-		case 5:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-				{
-					if(!CameraControllerBase->HoldZoomOnLockedCharacter) CameraControllerBase->CamIsZoomingInState = 1;
-				
-					CameraControllerBase->HoldZoomOnLockedCharacter = !CameraControllerBase->HoldZoomOnLockedCharacter;
-				
-				} else
-				{
-					CameraControllerBase->CamIsZoomingInState = 1;
-					SetCameraState(CameraData::ZoomIn);
-				}
-			}
-				break;
-		case 555:
-			{
-					CameraControllerBase->CamIsZoomingInState = 2;
-			}
-			break;
-		case 6:
-			{
-				if(CameraControllerBase->LockCameraToCharacter)
-				{
-					if(!CameraControllerBase->HoldZoomOnLockedCharacter) CameraControllerBase->CamIsZoomingOutState = 1;
-				
-					CameraControllerBase->HoldZoomOnLockedCharacter = !CameraControllerBase->HoldZoomOnLockedCharacter;
-				
-				} else
-				{
-					CameraControllerBase->CamIsZoomingOutState = 1;
-					SetCameraState(CameraData::ZoomOut);
-				}
-			}
-			break;
-		case 666:
-			{
-				CameraControllerBase->CamIsZoomingOutState = 2;
-			}
-			break;
-		case 8: SetCameraState(CameraData::ZoomInPosition); break;
-		case 9:
-			{
-				CameraControllerBase->CamIsRotatingLeft = true;
-				
-				if(CameraControllerBase->LockCameraToCharacter ||
-					CameraControllerBase->WIsPressedState ||
-					CameraControllerBase->AIsPressedState ||
-					CameraControllerBase->SIsPressedState ||
-					CameraControllerBase->DIsPressedState)
-					return;
-				
-				SetCameraState(CameraData::HoldRotateLeft);
-			} break;
-		case 10:
-			{
-				CameraControllerBase->CamIsRotatingRight = true;
-				
-				if(CameraControllerBase->LockCameraToCharacter ||
-					CameraControllerBase->WIsPressedState ||
-					CameraControllerBase->AIsPressedState ||
-					CameraControllerBase->SIsPressedState ||
-					CameraControllerBase->DIsPressedState)
-					return;
-				
-				SetCameraState(CameraData::HoldRotateRight);
-			} break;
-		case 999:
-			{
-				CameraControllerBase->CamIsRotatingLeft = false;
-			}
-			break;
-		case 101010:
-			{
-				CameraControllerBase->CamIsRotatingRight = false;
-			}
-			break;
-		case 12:
-			{
-				CameraControllerBase->TPressed();
-			}
-			break;
-		case 13:
-			{
-				float FloatValue = InputActionValue.Get<float>();
+			UE_LOG(LogTemp, Warning, TEXT("FOUND BUTTON Talent!"));
+			FocusedButton = HitButton;
+			// Do something with the HitButton
+		}
+	}
 
-				if(CameraControllerBase->ScrollZoomCount <= 10.f)
-				CameraControllerBase->ScrollZoomCount += FloatValue*2;
-				
-				if(CameraControllerBase->LockCameraToCharacter)
-					return;
-				
-				if(FloatValue > 0)
-				{
-					SetCameraState(CameraData::ScrollZoomIn);
-				}
-				else
-				{
-					SetCameraState(CameraData::ScrollZoomOut);
-				}
-			}
-			break;
-		case 15:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("15 pressed!"));
-
-			} break;
-		case 16:
-			{
-				float MouseX, MouseY;
-				CameraControllerBase->GetMousePosition(MouseX, MouseY);
-				PreviousMouseLocation.X = MouseX;
-				PreviousMouseLocation.Y = MouseY;
-				
-				CameraControllerBase->MiddleMouseIsPressed = true;
-			} break;
-		case 17:
-			{
-				CameraControllerBase->MiddleMouseIsPressed = false;
-			} break;
-		case 21:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityOne for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityOne, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
-		case 22:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityTwo for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityTwo, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
-		case 23:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityThree for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityThree, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
-		case 24:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFour for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityFour, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
-		case 25:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFive for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityFive, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
-		case 26:
-			{
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilitySix for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilitySix, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
-			} break;
+	UAbilityChooser* AbilityBar = Cast<UAbilityChooser>(AbilityChooser->GetUserWidgetObject());
+	if (AbilityBar)
+	{
+		UButton* HitButton = AbilityBar->GetButtonUnderCursor();
+		if (HitButton)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FOUND BUTTON Ability!"));
+			FocusedButton = HitButton;
+			// Do something with the HitButton
 		}
 	}
 
 }
-*/
 
+void AExtendedCameraBase::OnSimulatedMouseClick()
+{
+	if (FocusedButton)
+	{
+		// Simulate a click on the focused button
+		FocusedButton->OnClicked.Broadcast();
+	}
+}
 
 void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& InputActionValue, int32 NewCameraState)
 {
@@ -819,50 +413,116 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				// Joystick 1 X 
 				float IValue = InputActionValue.Get<float>();
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+				JoyStickX = IValue;
+				
+				if(CameraControllerBase->LShoulder2Pressed)
+				{
+					FVector2D MousePosition;
+					CameraControllerBase->GetMousePosition(MousePosition.X, MousePosition.Y);
+					MousePosition.X += IValue*2; // Modify this formula as needed
+					CameraControllerBase->SetMouseLocation(MousePosition.X, MousePosition.Y);
+					FindUButtonWithMouseHover();
+				}else
+				{
+					if (YawValue == CameraAngles[0] && !SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
+						//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
+						//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					}else if (YawValue == CameraAngles[1] && SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
+						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					}else if (YawValue == CameraAngles[3] && SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
+						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					}
+				
+					if(CameraControllerBase->YIsPressed)
+					{
+						for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
+						{
+							if (SelectedUnit)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Activating AbilityTwo for unit: %s"), *SelectedUnit->GetName());
+								OnAbilityInputDetected(EGASAbilityInputID::AbilityTwo, SelectedUnit, SelectedUnit->DefaultAbilities);
+							}
+						}
+					}
 				}
-				
-					
-				
 			} break;
 		case 21:
 			{
 				// Joystick 1 Y
 				
 				float IValue = InputActionValue.Get<float>();
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+				JoyStickY = IValue;
+				if(CameraControllerBase->LShoulder2Pressed)
+				{
+					FVector2D MousePosition;
+					CameraControllerBase->GetMousePosition(MousePosition.X, MousePosition.Y);
+					MousePosition.Y -= IValue*2; // Modify this formula as needed
+					CameraControllerBase->SetMouseLocation(MousePosition.X, MousePosition.Y);
+					FindUButtonWithMouseHover();
+				}else
+				{
+					if (YawValue == CameraAngles[1] && !SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
+						//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
+						//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					}else if (YawValue == CameraAngles[0] && SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
+						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					}else if (YawValue == CameraAngles[2] && SwitchAxis) {
+						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
+						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					}
+
+					if(JoyStickY > 0.f)
+						for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+						{
+							if (SelectedUnit)
+							{
+								OnAbilityInputDetected(EGASAbilityInputID::AbilityThree, SelectedUnit, SelectedUnit->DefaultAbilities);
+							}
+						}
 				}
-				
-					
-				
 			} break;
 		case 22:
 			{
 				// Gamepad A
-				CameraControllerBase->APressed();
-				
+				//CameraControllerBase->APressed();
+
+				UE_LOG(LogTemp, Warning, TEXT("True!"));
+				if(CameraControllerBase->LShoulder2Pressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if(SelectedUnit)
+						{
+							AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(SelectedUnit);
+							if (ExtendedUnitBase)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("TabNextUnitToChase!"));
+								ExtendedUnitBase->TabNextUnitToChase();
+								
+							}
+						}
+					}
+				}
+				else
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFour for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(EGASAbilityInputID::AbilityFour, SelectedUnit, SelectedUnit->DefaultAbilities);
+						}
+					}
+				}
 			} break;
 		case 23:
 			{
@@ -872,7 +532,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			} break;
 		case 24:
 			{
-				// Gamepad B
+				
 			} break;
 		case 25:
 			{
@@ -881,30 +541,63 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			} break;
 		case 26:
 			{
+				if(CameraControllerBase->LShoulder2Pressed)
+				{
+					OnSimulatedMouseClick();
+				}else
+				{
+					CameraControllerBase->CPressed();
+				}
 				// Gamepad X
-				CameraControllerBase->CPressed();
 			} break;
 		case 27:
 			{
-				// Gamepad X
+			
 			} break;
 		case 28:
 			{
+				// Gamepad Y
 				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed"));
+				CameraControllerBase->YIsPressed = true;
 
-				for (AGASUnit* SelectedUnit : CameraControllerBase->SelectedUnits)
-				{
-					if (SelectedUnit)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Activating AbilityOne for unit: %s"), *SelectedUnit->GetName());
-						OnAbilityInputDetected(EGASAbilityInputID::AbilityOne, SelectedUnit, SelectedUnit->DefaultAbilities);
-					}
-				}
+				
 				//CameraControllerBase->QPressed();
 			} break;
 		case 29:
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
+				CameraControllerBase->YIsPressed = false;
+
+				if(CameraControllerBase->LShoulder2Pressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							if(!LevelWidgetToggled)
+							{
+								SetExtendedUserWidget(SelectedUnit);
+								LevelWidgetToggled = true;
+							}else if(LevelWidgetToggled)
+							{
+								SetExtendedUserWidget(nullptr);
+								LevelWidgetToggled = false;
+							}
+						}
+					}
+				}
+				else
+				{
+
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating AbilityOne for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(EGASAbilityInputID::AbilityOne, SelectedUnit, SelectedUnit->DefaultAbilities);
+						}
+					}
+				}
 				//CameraControllerBase->QReleased();
 				
 			} break;
@@ -913,7 +606,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				// Joystick 2 X
 				UE_LOG(LogTemp, Warning, TEXT("Joystick 2 X"));
 				float FValue = InputActionValue.Get<float>();
-
+				JoyStick2X = FValue;
 				if(FValue >= 1)
 				{
 					CameraControllerBase->CamIsRotatingLeft = false;
@@ -929,9 +622,10 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				//  Joystick 2 Y
 				float FValue = InputActionValue.Get<float>();
-				
+				JoyStick2Y = FValue;
 				if(FValue >= 1)
 				{
+					
 					CameraControllerBase->ZoomInToPosition = false;
 					CameraControllerBase->ZoomOutToPosition = true;
 				}else{
@@ -958,14 +652,38 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				CameraControllerBase->CamIsRotatingLeft = false;
 				CameraControllerBase->CamIsRotatingRight = true;
 			} break;
+		case 322:
+			{
+				//  L Shoulder 2
+				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2"));
+				CameraControllerBase->LShoulder2Pressed = true;
+			} break;
+		case 333:
+			{
+				//  R Shoulder 2
+				UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2"));
+				CameraControllerBase->RShoulder2Pressed = true;
+			} break;
+		case 3222:
+			{
+				//  L Shoulder 2
+				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2 Released"));
+				CameraControllerBase->LShoulder2Pressed = false;
+			} break;
+		case 3333:
+			{
+				//  R Shoulder 2
+				UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2 Released"));
+				CameraControllerBase->RShoulder2Pressed = false;
+			} break;
 		case 34:
 			{
-				// UE_LOG(LogTemp, Warning, TEXT("L Trigger Pressed"));
+				UE_LOG(LogTemp, Warning, TEXT("L Trigger Pressed"));
 				CameraControllerBase->SetDropJumpMine(true);
 			} break;
 		case 35:
 			{
-				// UE_LOG(LogTemp, Warning, TEXT("L Trigger Released"));
+				UE_LOG(LogTemp, Warning, TEXT("L Trigger Released"));
 				CameraControllerBase->SetDropJumpMine(false);
 			} break;
 		case 36:
@@ -979,19 +697,19 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		case 38:
 			{
 				float IValue = -1.0f;
-
+			
 				if (YawValue == CameraAngles[0] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
 				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
 				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
 				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
 				}
 			} break;
 		case 39:
@@ -1000,16 +718,16 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				
 				if (YawValue == CameraAngles[0] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
 				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
 				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
 				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
 				}
 				
 			} break;
@@ -1018,16 +736,16 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				float IValue = 1.0f;
 				if (YawValue == CameraAngles[1] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
 				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
 				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
 				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
 				}
 				
 			} break;
@@ -1036,16 +754,16 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				float IValue = -1.0f;
 				if (YawValue == CameraAngles[1] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
 				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
+					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
 				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
 				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
 					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
 				}
 				
 			} break;

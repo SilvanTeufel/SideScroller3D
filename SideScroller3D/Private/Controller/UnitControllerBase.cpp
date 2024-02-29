@@ -187,7 +187,8 @@ void AUnitControllerBase::UnitControlStateMachine(float DeltaSeconds)
 		break;
 		case UnitData::PatrolRandom:
 			{
-				//if(UnitBase->TeamId == 3)UE_LOG(LogTemp, Warning, TEXT("PatrolRandom"));
+				//UE_LOG(LogTemp, Warning, TEXT("PatrolRandom"));
+				
 				if(UnitBase->SetNextUnitToChase())
 				{
 					UnitBase->SetUnitState(UnitData::Chase);
@@ -195,12 +196,13 @@ void AUnitControllerBase::UnitControlStateMachine(float DeltaSeconds)
 				{
 					SetUEPathfindingRandomLocation(UnitBase, DeltaSeconds);
 				}
+				
 
 			}
 			break;
 		case UnitData::PatrolIdle:
 			{
-				//if(UnitBase->TeamId == 3)UE_LOG(LogTemp, Warning, TEXT("PatrolIdle"));
+				//UE_LOG(LogTemp, Warning, TEXT("PatrolIdle"));
 				if(UnitBase->SetNextUnitToChase())
 				{
 					UnitBase->SetUnitState(UnitData::Chase);
@@ -802,14 +804,17 @@ void AUnitControllerBase::SetPatrolCloseLocation(AUnitBase* UnitBase)
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
 		{
+		
 			AActor* HitActor = HitResult.GetActor();
 
 			// Check if we hit the landscape
-			if (HitActor && HitActor->IsA(ALandscape::StaticClass()) )
+			//if (HitActor && HitActor->IsA(ALandscape::StaticClass()) )
 			{
 				// Hit landscape
 				// Set the Z-coordinate accordingly
 				UnitBase->RandomPatrolLocation.Z = HitResult.ImpactPoint.Z;
+
+				//UE_LOG(LogTemp, Warning, TEXT("FOUND PATROL LOCATION!!!!!: %s"), *UnitBase->RandomPatrolLocation.ToString());
 				return;
 			}
 		}
@@ -855,15 +860,17 @@ void AUnitControllerBase::SetUEPathfindingRandomLocation(AUnitBase* UnitBase, fl
 
 void AUnitControllerBase::SetUEPathfinding(AUnitBase* UnitBase, float DeltaSeconds, FVector Location)
 {
+
 	if(!UnitBase->SetUEPathfinding)
 		return;
-		
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if(PlayerController)
 	{
 		AControllerBase* ControllerBase = Cast<AControllerBase>(PlayerController);
 		if (ControllerBase != nullptr)
 		{
+			
 			UnitBase->SetWalkSpeed(UnitBase->Attributes->GetRunSpeed());
 			// You can use the controller here
 

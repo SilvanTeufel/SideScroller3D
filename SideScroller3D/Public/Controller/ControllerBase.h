@@ -151,6 +151,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "QIsPressed", Keywords = "SideScroller3D QIsPressed"), Category = TopDownRTSCamLib)
 		bool QIsPressed = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool YIsPressed = false;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "SelectedUnits", Keywords = "SideScroller3D SelectedUnits"), Category = SideScroller3D)
 		TArray <AUnitBase*> SelectedUnits;
@@ -172,4 +175,10 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = RTSUnitTemplate)
 		float UEPathfindingCornerOffset = 100.f;
+
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool RShoulder2Pressed = false;
+	
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool LShoulder2Pressed = false;
 };

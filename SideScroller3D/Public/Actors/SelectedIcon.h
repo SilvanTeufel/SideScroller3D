@@ -35,10 +35,10 @@ public:
 	FString SphereMeshAssetPath = TEXT("/Engine/BasicShapes/Plane");
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = RTSUnitTemplate)
-	FString MaterialBluePath = TEXT("Material'/RTSUnitTemplate/RTSUnitTemplate/Materials/M_Ring_Aura.M_Ring_Aura'");
+	FString MaterialBluePath = TEXT("Material'/SideScroller3D/SideScroller3D/Materials/M_Ring_Aura.M_Ring_Aura'");
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = RTSUnitTemplate)
-	FString MaterialActionPath = TEXT("Material'/RTSUnitTemplate/RTSUnitTemplate/Materials/M_Ring_Aura_Red.M_Ring_Aura_Red'");
+	FString MaterialActionPath = TEXT("Material'/SideScroller3D/SideScroller3D/Materials/M_Ring_Aura_Red.M_Ring_Aura_Red'");
 
 protected:
 	// Called when the game starts or when spawned

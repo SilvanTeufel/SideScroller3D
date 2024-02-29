@@ -2,6 +2,8 @@
 
 
 #include "Controller/ExtendedUnitControllerBase.h"
+
+#include "Actors/SelectedIcon.h"
 #include "Characters/Unit/ExtendedUnitBase.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -11,7 +13,6 @@ AExtendedUnitControllerBase::AExtendedUnitControllerBase()
 
 void AExtendedUnitControllerBase::BeginPlay()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ExtendedUnitControllerBase BEGINPLAY!!!!! "));
 	Super::BeginPlay();
 	/*
 	AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(GetPawn());
@@ -83,25 +84,78 @@ void AExtendedUnitControllerBase::ExtendedUnitControlMachine(float DeltaSeconds)
 	switch (ExtendedUnitBase->UnitState)
 	{
 	case UnitData::Run:
+		{
+			
+			FVector Velocity = ExtendedUnitBase->GetVelocity(); // Annahme, dass GetVelocity() verfügbar ist
+			float Speed = Velocity.Size(); // Die Geschwindigkeit als Skalar
+
+			//UE_LOG(LogTemp, Warning, TEXT("Run!! Speed: %f"), Speed);
+			//UE_LOG(LogTemp, Warning, TEXT("Run!! "));
+			// Überprüfen, ob die Geschwindigkeit einen bestimmten Wert überschreitet
+			if(Velocity.Z >= 10.f || Velocity.Z <= -10.f)
+			{
+				ExtendedUnitBase->SetUnitState(UnitData::Falling);
+			}else if (Velocity.X == 0.f && Velocity.Y == 0.f)
+			{
+				ExtendedUnitBase->SetUnitState(UnitData::Idle);
+			}
+		}
+		break;
 	case UnitData::Idle:
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Idle!! "));
+			//UE_LOG(LogTemp, Warning, TEXT("Idle!! "));
 			/*if(abs(ExtendedUnitVelocity.Z) > 1.f )
 			{
 				ExtendedUnitBase->SetUnitState(UnitData::Jump);
-			}else */if(abs(ExtendedUnitVelocity.Z) <= 1.f)
+			}else *//*if(abs(ExtendedUnitVelocity.Z) <= 1.f)
 			{
 				ExtendedUnitBase->DeSpawnGlider();
 			}
 			CreateJumpColor(ExtendedUnitBase);
+
+			*/
 		}
 		break;
+	case UnitData::Falling:
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Falling!! "));
+			FVector Velocity = ExtendedUnitBase->GetVelocity();
+			if(Velocity.Z >= -10.f && Velocity.Z <= 10.f)
+			{
+				ExtendedUnitBase->SetUnitState(UnitData::Run);
+			}
+		}break;
 	case UnitData::Attack:
-	case UnitData::Chase:
+		{
+			ExtendedUnitBase->UnitControlTimer = (ExtendedUnitBase->UnitControlTimer + DeltaSeconds);
+			//ExtendedUnitBase->SetNextUnitToChase();
+			//ExtendedUnitBase->UnitToChase->SetSelected();
+			RotateToAttackUnit(ExtendedUnitBase, ExtendedUnitBase->UnitToChase);
+		
+			if (ExtendedUnitBase->UnitControlTimer > AttackDuration + PauseDuration)
+			{
+				ExtendedUnitBase->SetUnitState(UnitData::Pause);
+			}
+			
+		}
+		break;
+	//case UnitData::Chase:
 	case UnitData::Pause:
 		{
+			ExtendedUnitBase->UnitControlTimer = (ExtendedUnitBase->UnitControlTimer + DeltaSeconds);
+			if(ExtendedUnitBase->UnitToChase && ExtendedUnitBase->UnitToChase->GetUnitState() == UnitData::Dead) {
+
+				if(ExtendedUnitBase->SetNextUnitToChase()) return;
+
+				ExtendedUnitBase->SetUEPathfinding = true;
+				ExtendedUnitBase->SetUnitState( ExtendedUnitBase->UnitStatePlaceholder );
+				
+			} else if (ExtendedUnitBase->UnitControlTimer > PauseDuration)
+			{
+				ExtendedUnitBase->SetUnitState(UnitData::Idle);
+			}
 			UE_LOG(LogTemp, Warning, TEXT("Pause!! "));
-			CreateJumpColor(ExtendedUnitBase);
+			//CreateJumpColor(ExtendedUnitBase);
 		}
 		break;
 	case UnitData::TripleJump:
@@ -207,7 +261,6 @@ void AExtendedUnitControllerBase::ExtendedUnitControlMachine(float DeltaSeconds)
 
 
 				ExtendedUnitBase->MouseBotSpawnLocation = FVector( ExtendedUnitBase->MouseBotSpawnLocation.X, ExtendedUnitBase->MouseBotSpawnLocation.Y, ExtendedUnitBase->MouseBotSpawnLocation.Z+500.f);
-				
 				ExtendedUnitBase->SpawnMouseBot();
 				ExtendedUnitBase->UnitControlTimer = 0.f;
 				ExtendedUnitBase->SetUnitState(UnitData::Idle);

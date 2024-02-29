@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CameraBase.h" // Include the header file for ACameraBase
+#include <Components/Button.h>
 #include "ExtendedCameraBase.generated.h"
 
 /**
@@ -53,7 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
 		void SetExtendedUserWidget(AUnitBase* SelectedActor);
 	// Abilitys + Talents /////
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category = RTSUnitTemplate)
+	bool LevelWidgetToggled = false;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,  Category = RTSUnitTemplate)
 	class UWidgetComponent* WidgetSelector;
 
@@ -65,4 +68,25 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
 	bool AutoAdjustTalentChooserPosition = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	float JoyStickY = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	float JoyStickX = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	float JoyStick2Y = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	float JoyStick2X = 0.f;
+
+	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
+	void FindUButtonWithMouseHover();
+
+	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
+	void OnSimulatedMouseClick();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	UButton* FocusedButton;
 };

@@ -12,10 +12,57 @@ void UTalentChooser::NativeConstruct()
     Super::NativeConstruct();
     
     InitializeLevelAndTalentUI();
-    
+
+    InitializeSingleButton("Save", Save);
+    InitializeSingleButton("Load", Load);
+    InitializeSingleButton("LevelUpButton", LevelUpButton);
+    InitializeSingleButton("ResetTalentsButton", ResetTalentsButton);
     CreateClassUIElements();
 
     SetVisibility(ESlateVisibility::Hidden);
+}
+
+UButton* UTalentChooser::GetButtonUnderCursor() const
+{
+    // Check the ClassButtons array
+    for (UButton* Button : ClassButtons)
+    {
+        if (Button && Button->IsHovered())
+        {
+            return Button;
+        }
+    }
+
+    // Check for LevelUpButton
+    if (LevelUpButton && LevelUpButton->IsHovered())
+    {
+        return LevelUpButton;
+    }
+
+    // Check for ResetTalentsButton
+    if (ResetTalentsButton && ResetTalentsButton->IsHovered())
+    {
+        return ResetTalentsButton;
+    }
+
+    if (Save && Save->IsHovered())
+    {
+        return Save;
+    }
+
+    if (Load && Load->IsHovered())
+    {
+        return Load;
+    }
+
+    if (ResetTalentsButton && ResetTalentsButton->IsHovered())
+    {
+        return ResetTalentsButton;
+    }
+    // If you have other buttons, continue checking them here in the same fashion
+    // ...
+
+    return nullptr; // If no button is under the cursor, return nullptr
 }
 
 void UTalentChooser::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -156,6 +203,16 @@ void UTalentChooser::InitializeLevelAndTalentUI()
     AvailableTalents->SetText(FText::AsNumber(OwnerUnitBase->LevelData.TalentPoints));
     
 
+}
+
+void UTalentChooser::InitializeSingleButton(const FString& ButtonName, UButton* Button)
+{
+    UButton* NewButton = Cast<UButton>(GetWidgetFromName(FName(*ButtonName)));
+
+    if (NewButton)
+    {
+        Button = NewButton;
+    }
 }
 
 

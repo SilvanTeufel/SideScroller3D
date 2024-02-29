@@ -466,8 +466,6 @@ void AControllerBase::SetRunLocation_Implementation(AUnitBase* Unit, const FVect
 
 void AControllerBase::MoveToLocationUEPathFinding_Implementation(AUnitBase* Unit, const FVector& DestinationLocation)
 {
-
-	
 	if(!HasAuthority())
 	{
 		return;
@@ -502,7 +500,6 @@ void AControllerBase::MoveToLocationUEPathFinding_Implementation(AUnitBase* Unit
 	FNavPathSharedPtr NavPath;
 	
 	AIController->MoveTo(MoveRequest, &NavPath);
-	
 	if(NavPath)
 	{
 		FNavMeshPath* NavMeshPath = NavPath->CastPath<FNavMeshPath>();

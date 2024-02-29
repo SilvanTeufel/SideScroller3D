@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "SpringArm", Keywords = "SideScroller3D SpringArm"), Category = SideScroller3D)
 		USpringArmComponent* SpringArm;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideScroller3D)
+		float DefaultSpringArmLength = 1500.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "SpringArmRotator", Keywords = "SideScroller3D SpringArmRotator"), Category = SideScroller3D)
 		FRotator SpringArmRotator = FRotator(0, 0, 0);
 
@@ -162,16 +165,10 @@ public:
 		float ZoomXYDistance = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "CamZOffset", Keywords = "SideScroller3D CamZOffset"), Category = SideScroller3D)
-		float CamZOffset = 800.f;
+		float CamZOffset = 600.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "CamZOffset", Keywords = "SideScroller3D CamZOffset"), Category = SideScroller3D)
-		float LastActorZeroPosition = 0.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "DeltaZScaler", Keywords = "SideScroller3D DeltaZScaler"), Category = SideScroller3D)
-		float DeltaZScaler = 2.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "DeltaDecrementer", Keywords = "SideScroller3D DeltaDecrementer"), Category = SideScroller3D)
-		float DeltaDecrementer = 1.f;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "CamZOffset", Keywords = "SideScroller3D CamZOffset"), Category = SideScroller3D)
+		//float LastActorZeroPosition = 0.f;
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ZoomThirdPersonPosition", Keywords = "SideScroller3D ZoomThirdPersonPosition"), Category = TopDownRTSCamLib)
 		bool IsCharacterDistanceTooLow(float Distance, const FVector SelectedActorPosition = FVector(0.f,0.f,0.f));
@@ -199,22 +196,7 @@ public:
 		}
 		return IsInAngle;
 	}
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MoveCamToForward", Keywords = "SideScroller3D MoveCamToForward"), Category = TopDownRTSCamLib)
-		void MoveCamToForward();
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MoveCamToBackward", Keywords = "SideScroller3D MoveCamToBackward"), Category = TopDownRTSCamLib)
-		void MoveCamToBackward();
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MoveCamToLeft", Keywords = "SideScroller3D MoveCamToLeft"), Category = TopDownRTSCamLib)
-		void MoveCamToLeft();
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MoveCamToRight", Keywords = "SideScroller3D MoveCamToRight"), Category = TopDownRTSCamLib)
-		void MoveCamToRight();
 	
-	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "StartTime", Keywords = "SideScroller3D StartTime"), Category = TopDownRTSCamLib)
-		float StartTime = 0.f;
-		
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "SwitchAxis", Keywords = "SideScroller3D SwitchAxis"), Category = TopDownRTSCamLib)
 		bool SwitchAxis = false;
 public:
@@ -222,24 +204,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (DisplayName = "ControlWidgetComp", Keywords = "SideScroller3D ControlWidgetComp"), Category = SideScroller3D)
 		class UWidgetComponent* ControlWidgetComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ControlWidgetRotator", Keywords = "SideScroller3D ControlWidgetRotator"), Category = SideScroller3D)
-		FRotator ControlWidgetRotation = FRotator(50, 180, 0);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ControlWidgetLocation", Keywords = "SideScroller3D ControlWidgetLocation"), Category = SideScroller3D)
-		FVector ControlWidgetLocation = FVector(400.f, -100.0f, -0.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ControlWidgetHideLocation", Keywords = "SideScroller3D ControlWidgetHideLocation"), Category = SideScroller3D)
-		FVector ControlWidgetHideLocation = FVector(400.f, -4500.0f, -0.0f);
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HideControlWidget", Keywords = "SideScroller3D HideControlWidget"), Category = SideScroller3D)
 		void HideControlWidget();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ShowControlWidget", Keywords = "SideScroller3D ShowControlWidget"), Category = SideScroller3D)
 		void ShowControlWidget();
-	
+
+	/*
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnControlWidget", Keywords = "SideScroller3D SpawnControlWidget"), Category = SideScroller3D)
 		void SpawnControlWidget();
-
+	*/
 	
 
 public:
@@ -248,28 +222,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (DisplayName = "UIWeaponIndicator", Keywords = "SideScroller3D UIWeaponIndicator"), Category = SideScroller3D)
 		class AUIWeaponIndicator* UIWeaponIndicator;
-	
+	/*
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "WeaponIndictatorLocation", Keywords = "SideScroller3D WeaponIndictatorLocation"), Category = SideScroller3D)
 		FVector WeaponIndictatorLocation = FVector(50, 0, -50);
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ActionWidgetRotation", Keywords = "SideScroller3D ActionWidgetRotation"), Category = SideScroller3D)
-		FRotator ActionWidgetRotation = FRotator(0.f, 0.f, 0.f);
-    
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ActionWidgetLocation", Keywords = "SideScroller3D ActionWidgetLocation"), Category = SideScroller3D)
-    	FVector ActionWidgetLocation = FVector(0.f, 0.f, -150.f);
-
+	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetUserWidget", Keywords = "SideScroller3D SetUserWidget"), Category = SideScroller3D)
 		 void SetUserWidget(AExtendedUnitBase* SelectedActor);
     
     UFUNCTION(BlueprintCallable, meta = (DisplayName = "ChangeWeaponIndicator", Keywords = "SideScroller3D ChangeWeaponIndicator"), Category = SideScroller3D)
     	 void ChangeWeaponIndicator(class USkeletalMesh* NewWeaponMesh);
-
+/*
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnWeaponIndicator", Keywords = "SideScroller3D SpawnWeaponIndicator"), Category = SideScroller3D)
 		void SpawnWeaponIndicator();
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnActionWidget", Keywords = "SideScroller3D SpawnActionWidget"), Category = SideScroller3D)
-		void SpawnActionWidget();
-
+*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "CameraState", Keywords = "SideScroller3D CameraState"), Category = SideScroller3D)
 		TEnumAsByte<CameraData::CameraState> CameraState = CameraData::ZoomInPosition;

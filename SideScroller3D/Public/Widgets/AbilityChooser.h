@@ -46,6 +46,15 @@ public:
 	TArray<class UButton*> ThrowAbilityButtons;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* Save;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Load;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ResetAbilityButton;
+	
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* AvailableAbilityPointsText;
 
 	UPROPERTY(meta = (BindWidget))
@@ -65,6 +74,8 @@ public:
 	void UpdateAbilityDisplay();
 	
 	void InitializeButtonArray(const FString& ButtonPrefix, TArray<UButton*>& ButtonArray);
+
+	void InitializeSingleButton(const FString& ButtonName, UButton* Button);
 	// Utility function to get enum value as string
 	static FString GetEnumValueAsString(const FString& EnumName, int32 EnumValue);
 
@@ -72,5 +83,7 @@ public:
 	AAbilityUnit* GetOwnerActor() {
 		return OwnerAbilityUnit;
 	}
-	
+
+	UFUNCTION(BlueprintCallable, Category = "RTSUnitTemplate")
+	UButton* GetButtonUnderCursor() const;
 };

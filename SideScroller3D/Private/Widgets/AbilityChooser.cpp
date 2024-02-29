@@ -11,6 +11,9 @@ void UAbilityChooser::NativeConstruct()
     InitializeButtonArray(ButtonPreFixes[1], DefensiveAbilityButtons);
     InitializeButtonArray(ButtonPreFixes[2], AttackAbilityButtons);
     InitializeButtonArray(ButtonPreFixes[3], ThrowAbilityButtons);
+    InitializeSingleButton("Save", Save);
+    InitializeSingleButton("Load", Load);
+    InitializeSingleButton("ResetAbilityButton", ResetAbilityButton);
     SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -77,6 +80,64 @@ FString UAbilityChooser::GetEnumValueAsString(const FString& EnumName, int32 Enu
     }
     return Enum->GetNameByValue(EnumValue).ToString();
 }
+
+UButton* UAbilityChooser::GetButtonUnderCursor() const
+{
+    // Check OffensiveAbilityButtons
+    for (UButton* Button : OffensiveAbilityButtons)
+    {
+        if (Button && Button->IsHovered())
+        {
+            return Button;
+        }
+    }
+
+    // Check DefensiveAbilityButtons
+    for (UButton* Button : DefensiveAbilityButtons)
+    {
+        if (Button && Button->IsHovered())
+        {
+            return Button;
+        }
+    }
+
+    // Check AttackAbilityButtons
+    for (UButton* Button : AttackAbilityButtons)
+    {
+        if (Button && Button->IsHovered())
+        {
+            return Button;
+        }
+    }
+
+    // Check ThrowAbilityButtons
+    for (UButton* Button : ThrowAbilityButtons)
+    {
+        if (Button && Button->IsHovered())
+        {
+            return Button;
+        }
+    }
+
+    if (Save && Save->IsHovered())
+    {
+        return Save;
+    }
+
+    if (Load && Load->IsHovered())
+    {
+        return Load;
+    }
+
+    if (ResetAbilityButton && ResetAbilityButton->IsHovered())
+    {
+        return ResetAbilityButton;
+    }
+
+    // If no buttons are hovered, return nullptr
+    return nullptr;
+}
+
 /*
 FString UAbilityChooser::GetEnumValueAsString(const FString& EnumName, int32 EnumValue)
 {
@@ -108,4 +169,15 @@ void UAbilityChooser::InitializeButtonArray(const FString& ButtonPrefix, TArray<
     {
         UsedAbilityPointsTextArray.Add(TextBlock);
     }
+}
+
+
+void UAbilityChooser::InitializeSingleButton(const FString& ButtonName, UButton* Button)
+{
+        UButton* NewButton = Cast<UButton>(GetWidgetFromName(FName(*ButtonName)));
+
+        if (NewButton)
+        {
+            Button = NewButton;
+        }
 }

@@ -206,7 +206,7 @@ public:
 /////////////////////////////
 
 // SelectedIcon related /////////
-protected:
+	public:
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "SelectedCharacterIcon", Keywords = "RTSUnitTemplate SelectedCharacterIcon"), Category = TopDownRTSTemplate)
 	class ASelectedIcon* SelectedIcon;
 

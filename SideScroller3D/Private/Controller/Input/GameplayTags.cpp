@@ -103,6 +103,12 @@ void FGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Left_Shoulder, "InputTag.Left_Shoulder", "Left_Shoulder");
 	AddTag(InputTag_Right_Shoulder, "InputTag.Right_Shoulder", "Right_Shoulder");
 
+	AddTag(InputTag_Left_Shoulder_2, "InputTag.Left_Shoulder_2", "Left_Shoulder_2");
+	AddTag(InputTag_Right_Shoulder_2, "InputTag.Right_Shoulder_2", "Right_Shoulder_2");
+
+	AddTag(InputTag_Left_Shoulder_2_Released, "InputTag.Left_Shoulder_2_Released", "Left_Shoulder_2_Released");
+	AddTag(InputTag_Right_Shoulder_2_Released, "InputTag.Right_Shoulder_2_Released", "Right_Shoulder_2_Released");
+	
 	AddTag(InputTag_Left_Trigger_Pressed, "InputTag.Left_Trigger_Pressed", "Left_Trigger_Pressed");
 	AddTag(InputTag_Left_Trigger_Released, "InputTag.Left_Trigger_Released", "Left_Trigger_Released");
 	
@@ -116,7 +122,7 @@ void FGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	
 	AddTag(InputTag_Middle_Mouse_Pressed, "InputTag.Middle_Mouse_Pressed", "Middle_Mouse_Pressed");
 	AddTag(InputTag_Middle_Mouse_Released, "InputTag.Middle_Mouse_Released", "Middle_Mouse_Released");
-
+	
 	AddTag(InputTag_1_Pressed, "InputTag.1_Pressed", "1_Pressed");
 	AddTag(InputTag_2_Pressed, "InputTag.2_Pressed", "2_Pressed");
 	AddTag(InputTag_3_Pressed, "InputTag.3_Pressed", "3_Pressed");

@@ -172,7 +172,7 @@ void ACameraControllerBase::LockCamToCharacter()
 	if( SelectedUnits.Num())
 	{
 		FVector SelectedActorLocation = SelectedUnits[0]->GetActorLocation();
-		UE_LOG(LogTemp, Warning, TEXT("SelectedUnits[0]->UnitIndex: %d"), SelectedUnits[0]->UnitIndex);
+		//UE_LOG(LogTemp, Warning, TEXT("SelectedUnits[0]->UnitIndex: %d"), SelectedUnits[0]->UnitIndex);
 		CameraBase->LockOnUnit(SelectedUnits[0]);
 		
 		if(!CamIsRotatingLeft && (CamIsRotatingRight || !CameraBase->IsCameraInAngle()))
@@ -201,15 +201,7 @@ void ACameraControllerBase::LockCamToCharacter()
 		{
 			ZoomInToPosition = false;
 		}
-		else if(!ZoomInToPosition && CameraBase->IsCharacterDistanceTooLow(CameraBase->ZoomPosition, SelectedActorLocation) && !CamIsZoomingIn && !HoldZoomOnLockedCharacter)
-		{
-				CameraBase->ZoomOutToPosition(CameraBase->ZoomPosition, SelectedActorLocation);
-				CameraBase->CameraDistanceToCharacter = (CameraBase->GetActorLocation().Z - SelectedUnits[0]->GetActorLocation().Z);
-		}
-	}else if(!LockAlwaysToCharacter)
-	{
-		LockCameraToCharacter = !LockCameraToCharacter;
-		CameraBase->SetCameraState(CameraData::ZoomInPosition);
+		
 	}
 }
 

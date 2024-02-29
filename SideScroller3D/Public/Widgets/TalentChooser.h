@@ -46,6 +46,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TArray<class UTextBlock*> ClassNames;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Save;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Load;
+
 	// Functions to dynamically create UI elements
 	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
 	void UpdateExperience();
@@ -59,6 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
 	void InitializeLevelAndTalentUI();
 
+	void InitializeSingleButton(const FString& ButtonName, UButton* Button);
+	
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* ExperienceProgressBar;
 	
@@ -90,6 +98,8 @@ public:
 		OwnerUnitBase = Unit;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "RTSUnitTemplate")
+	UButton* GetButtonUnderCursor() const;
 	// Additional helper functions as needed
 	// ...
 };

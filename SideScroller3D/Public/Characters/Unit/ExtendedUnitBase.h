@@ -62,6 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ReloadWeapon", Keywords = "SideScroller3D ReloadWeapon"), Category = SideScroller3D)
 		void ReloadWeapon();
 
+	UFUNCTION(BlueprintCallable,  Category = SideScroller3D)
+		bool TabNextUnitToChase();
+	
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "ActualWeaponId", Keywords = "SideScroller3D ActualWeaponId"), Category = SideScroller3D)
 		int ActualWeaponId = 1;
 
@@ -273,8 +276,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "Glider", Keywords = "SideScroller3D Glider"), Category = SideScroller3D)
 	class AGlider* Glider;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "GliderSpawnOffset", Keywords = "SideScroller3D GliderSpawnOffset"), Category = SideScroller3D)
-	FVector GliderSpawnOffset = FVector(0, 0, -40);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideScroller3D)
+	FName GliderSocketName = FName("ik_foot_rSocket");
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideScroller3D)
+	FVector GliderSpawnOffset = FVector(0, 0, 0);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideScroller3D)
+	FRotator GliderSpawnRotator = FRotator(90.f, 0.f, 0.f);
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnGlider", Keywords = "SideScroller3D SpawnGlider"), Category = SideScroller3D)
 	void SpawnGlider();
@@ -285,7 +294,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "GliderSpawned", Keywords = "SideScroller3D GliderSpawned"), Category = SideScroller3D)
 	bool GliderSpawned = false;
 
-
+	UPROPERTY(BlueprintReadWrite, Category = SideScroller3D)
+	int DespawnGliderState = 0;
+	
 	UPROPERTY(BlueprintReadWrite, meta = (DisplayName = "XAxisFixedPosition", Keywords = "SideScroller3D XAxisFixedPosition"), Category = TopDownRTSCamLib)
 	float XAxisFixedPosition;
 

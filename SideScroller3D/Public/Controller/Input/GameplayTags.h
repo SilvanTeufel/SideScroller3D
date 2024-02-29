@@ -85,6 +85,12 @@ public:
 	FGameplayTag InputTag_Left_Shoulder;
 	FGameplayTag InputTag_Right_Shoulder;
 
+	FGameplayTag InputTag_Left_Shoulder_2;
+	FGameplayTag InputTag_Right_Shoulder_2;
+
+	FGameplayTag InputTag_Left_Shoulder_2_Released;
+	FGameplayTag InputTag_Right_Shoulder_2_Released;
+	
 	FGameplayTag InputTag_Left_Trigger_Pressed;
 	FGameplayTag InputTag_Left_Trigger_Released;
 

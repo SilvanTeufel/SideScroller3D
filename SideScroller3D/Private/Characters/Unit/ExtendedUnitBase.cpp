@@ -296,15 +296,17 @@ void AExtendedUnitBase::SpawnGlider()
 
 	FTransform SpellTransform;
 	SpellTransform.SetLocation(FVector(0, 0, 0));
-	SpellTransform.SetRotation(FQuat(FRotator::ZeroRotator));
+	SpellTransform.SetRotation(FQuat(FRotator(0.f, 0.f, 0.f)));
 
 	Glider = GetWorld()->SpawnActor<AGlider>(GliderBaseClass, SpellTransform, SpawnParams);
 
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
+	
 	if (Glider)
 	{
-		Glider->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("rootSocket"));
-		Glider->SetActorScale3D(FVector(1.0f));
+		Glider->AttachToComponent(GetMesh(), AttachmentRules, GliderSocketName);
 		Glider->SetActorRelativeLocation(GliderSpawnOffset);
+		Glider->SetActorRelativeRotation(GliderSpawnRotator);
 		GliderSpawned = true;
 	}
 }
@@ -393,4 +395,38 @@ void AExtendedUnitBase::SetAmmo(int NewAmmo)
 float AExtendedUnitBase::GetAmmo()
 {
 	return MagSize[ActualWeaponId];
+}
+
+bool AExtendedUnitBase::TabNextUnitToChase()
+{
+	if(!UnitsToChase.Num()) return false;
+		
+	
+	int NewIndex = 0;
+	bool RValue = false;
+	
+	for(int i = 0; i < UnitsToChase.Num(); i++)
+	{
+		if(UnitsToChase[i] && UnitsToChase[i]->UnitIndex != UnitToChase->UnitIndex && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
+		{
+				UE_LOG(LogTemp, Warning, TEXT("Tabbed to the Next Unit!"));
+				UnitToChase->SetDeselected();
+				UnitToChase = UnitsToChase[NewIndex];
+				UnitToChase->SetSelected();
+				RValue = true;
+				break;
+		}
+	}
+	
+	TArray <AUnitBase*> UnitsToDelete = UnitsToChase;
+	
+	for(int i = 0; i < UnitsToDelete.Num(); i++)
+	{
+		if(UnitsToDelete[i] && UnitsToDelete[i]->GetUnitState() == UnitData::Dead)
+		{
+			UnitsToChase.Remove(UnitsToDelete[i]);
+		}
+	}
+
+	return RValue;
 }
