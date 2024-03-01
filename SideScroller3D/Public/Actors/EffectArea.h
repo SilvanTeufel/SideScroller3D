@@ -58,7 +58,13 @@ public:
 	float BiggerScaleInterval = 1.0f;
 	
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
-	TSubclassOf<UGameplayEffect> AreaEffect;
+	TSubclassOf<UGameplayEffect> AreaEffectOne;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	TSubclassOf<UGameplayEffect> AreaEffectTwo;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
+	TSubclassOf<UGameplayEffect> AreaEffectThree;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
 	bool IsHealing = false;
