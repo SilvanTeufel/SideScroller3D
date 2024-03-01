@@ -603,7 +603,7 @@ void AControllerBase::SetControlerTeamId_Implementation(int Id)
 	SelectableTeamId = Id;
 }
 
-void AControllerBase::SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn)
+AEffectArea* AControllerBase::SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn)
 {
 
 	FTransform Transform;
@@ -629,6 +629,8 @@ void AControllerBase::SpawnEffectArea(int TeamId, FVector Location, FVector Scal
 		}
 		
 		UGameplayStatics::FinishSpawningActor(MyEffectArea, Transform);
+
+		return MyEffectArea;
 	}
-	
+	return nullptr;
 }

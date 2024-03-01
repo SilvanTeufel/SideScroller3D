@@ -196,5 +196,5 @@ public:
 		bool LShoulderPressed = false;
 
 	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
-		void SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn);
+		AEffectArea* SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn);
 };

@@ -274,6 +274,12 @@ void AUnitControllerBase::UnitControlStateMachine(float DeltaSeconds)
 				
 		}
 		break;
+		case UnitData::Rooted:
+		{
+			//if(UnitBase->TeamId == 3)UE_LOG(LogTemp, Warning, TEXT("Idle"));
+			Rooted(UnitBase, DeltaSeconds);
+		}
+		break;
 		case UnitData::Idle:
 		{
 			//if(UnitBase->TeamId == 3)UE_LOG(LogTemp, Warning, TEXT("Idle"));
@@ -291,6 +297,18 @@ void AUnitControllerBase::UnitControlStateMachine(float DeltaSeconds)
 	if (UnitBase->Attributes->GetHealth() <= 0.f && UnitBase->GetUnitState() != UnitData::Dead) {
 		KillUnitBase(UnitBase);
 		UnitBase->UnitControlTimer = 0.f;
+	}
+}
+
+void AUnitControllerBase::Rooted(AUnitBase* UnitBase, float DeltaSeconds)
+{
+	UnitBase->SetWalkSpeed(0);
+	UnitBase->UnitControlTimer += DeltaSeconds;
+	if (UnitBase->UnitControlTimer > IsRootedDuration)
+	{
+		UnitBase->SetWalkSpeed(UnitBase->Attributes->GetRunSpeed());
+		UnitBase->UnitControlTimer = 0.f;
+		UnitBase->SetUnitState(UnitBase->UnitStatePlaceholder);
 	}
 }
 

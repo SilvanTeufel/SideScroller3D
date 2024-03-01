@@ -88,11 +88,13 @@ void AEffectArea::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 			UnitToHit->ApplyInvestmentEffect(AreaEffectOne);
 			UnitToHit->ApplyInvestmentEffect(AreaEffectTwo);
 			UnitToHit->ApplyInvestmentEffect(AreaEffectThree);
+			ImpactEvent(UnitToHit);
 		}else if(UnitToHit && UnitToHit->TeamId == TeamId && IsHealing)
 		{
 			UnitToHit->ApplyInvestmentEffect(AreaEffectOne);
 			UnitToHit->ApplyInvestmentEffect(AreaEffectTwo);
 			UnitToHit->ApplyInvestmentEffect(AreaEffectThree);
+			ImpactEvent(UnitToHit);
 		}
 	}
 }
