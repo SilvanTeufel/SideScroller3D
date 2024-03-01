@@ -602,3 +602,33 @@ void AControllerBase::SetControlerTeamId_Implementation(int Id)
 {
 	SelectableTeamId = Id;
 }
+
+void AControllerBase::SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn)
+{
+
+	FTransform Transform;
+	Transform.SetLocation(Location);
+	Transform.SetRotation(FQuat(FRotator::ZeroRotator)); // FRotator::ZeroRotator
+
+		
+	const auto MyEffectArea = Cast<AEffectArea>
+						(UGameplayStatics::BeginDeferredActorSpawnFromClass
+						(this, EAClass, Transform,  ESpawnActorCollisionHandlingMethod::AlwaysSpawn));
+	
+	if (MyEffectArea != nullptr)
+	{
+		MyEffectArea->TeamId = TeamId;
+		MyEffectArea->Mesh->OnComponentBeginOverlap.AddDynamic(MyEffectArea, &AEffectArea::OnOverlapBegin);
+
+		// Apply scale to the Mesh
+		MyEffectArea->Mesh->SetWorldScale3D(Scale);
+
+		if(ActorToLockOn)
+		{
+			MyEffectArea->AttachToComponent(ActorToLockOn->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("rootSocket"));
+		}
+		
+		UGameplayStatics::FinishSpawningActor(MyEffectArea, Transform);
+	}
+	
+}

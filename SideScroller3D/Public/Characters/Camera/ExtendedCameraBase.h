@@ -89,4 +89,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
 	UButton* FocusedButton;
+
+
+	void JoyStickMoveCamDependent(ACameraControllerBase* CameraControllerBase, float Value, int Angles[4]);
 };

@@ -103,6 +103,9 @@ void FGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Left_Shoulder, "InputTag.Left_Shoulder", "Left_Shoulder");
 	AddTag(InputTag_Right_Shoulder, "InputTag.Right_Shoulder", "Right_Shoulder");
 
+	AddTag(InputTag_Left_Shoulder_Released, "InputTag.Left_Shoulder_Released", "Left_Shoulder_Released");
+	AddTag(InputTag_Right_Shoulder_Released, "InputTag.Right_Shoulder_Released", "Right_Shoulder_Released");
+	
 	AddTag(InputTag_Left_Shoulder_2, "InputTag.Left_Shoulder_2", "Left_Shoulder_2");
 	AddTag(InputTag_Right_Shoulder_2, "InputTag.Right_Shoulder_2", "Right_Shoulder_2");
 

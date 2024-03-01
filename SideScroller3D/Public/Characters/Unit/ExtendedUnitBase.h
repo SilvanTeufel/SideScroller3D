@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ChangeWeapon", Keywords = "SideScroller3D ChangeWeapon"), Category = SideScroller3D)
 		void ChangeWeapon(FString WeaponName);
 
+	UFUNCTION(BlueprintCallable, Category = SideScroller3D)
+		void SpawnWeaponProjectile(AActor* Target, AActor* Attacker);
+	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire", Keywords = "SideScroller3D Fire"), Category = SideScroller3D)
 		void Fire();
 	

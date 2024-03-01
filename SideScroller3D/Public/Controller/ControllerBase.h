@@ -6,6 +6,7 @@
 #include "Hud/HUDBase.h"
 #include "Characters/Camera/CameraBase.h"
 #include "GameFramework/PlayerController.h"
+#include "Actors/EffectArea.h"
 #include "ControllerBase.generated.h"
 
 /**
@@ -181,4 +182,19 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
 		bool LShoulder2Pressed = false;
+	
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool XIsPressed = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool BIsPressed = false;
+	
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool RShoulderPressed = false;
+	
+	UPROPERTY(BlueprintReadWrite, Category = TopDownRTSCamLib)
+		bool LShoulderPressed = false;
+
+	UFUNCTION(BlueprintCallable, Category = RTSUnitTemplate)
+		void SpawnEffectArea(int TeamId, FVector Location, FVector Scale, TSubclassOf<class AEffectArea> EAClass, AUnitBase* ActorToLockOn);
 };

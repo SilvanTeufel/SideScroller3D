@@ -84,6 +84,44 @@ void AExtendedUnitBase::ChangeWeapon(FString WeaponName) {
 	}
 }
 
+
+void AExtendedUnitBase::SpawnWeaponProjectile(AActor* Target, AActor* Attacker) // FVector TargetLocation
+{
+	AUnitBase* ShootingUnit = Cast<AUnitBase>(Attacker);
+
+	if(ShootingUnit)
+	{
+		FTransform Transform;
+		Transform.SetLocation(GetActorLocation() + Attributes->GetProjectileScaleActorDirectionOffset()*GetActorForwardVector() + ProjectileSpawnOffset);
+
+		FVector Direction = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		FRotator InitialRotation = Direction.Rotation() + ProjectileRotationOffset;
+
+		Transform.SetRotation(FQuat(InitialRotation));
+		Transform.SetScale3D(ShootingUnit->ProjectileScale);
+		
+		const auto MyProjectile = Cast<AProjectile>
+							(UGameplayStatics::BeginDeferredActorSpawnFromClass
+							(this, ProjectileBaseClass, Transform,  ESpawnActorCollisionHandlingMethod::AlwaysSpawn));
+		if (MyProjectile != nullptr)
+		{
+			MyProjectile->Init(Target, Attacker);
+			if (MyProjectile->Mesh)
+			{
+				MyProjectile->Mesh->SetStaticMesh(ProjectileMesh);
+				MyProjectile->Mesh->SetMaterial(0, ProjectileMaterial);
+			}
+
+			MyProjectile->Mesh->OnComponentBeginOverlap.AddDynamic(MyProjectile, &AProjectile::OnOverlapBegin);
+
+
+			
+		
+			UGameplayStatics::FinishSpawningActor(MyProjectile, Transform);
+		}
+	}
+}
+
 void AExtendedUnitBase::Fire()
 {
 	Weapon->PlayFireAnimation();

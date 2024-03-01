@@ -265,7 +265,7 @@ void AUnitBase::SetDeselected()
 	if (SelectedIcon)
 	{
 		SelectedIcon->IconMesh->bHiddenInGame = true;
-		SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
+		//SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
 	}
 }
 
@@ -283,7 +283,7 @@ void AUnitBase::SpawnSelectedIcon()
 	SelectedIcon = GetWorld()->SpawnActor<ASelectedIcon>(SelectedIconBaseClass, SpellTransform, SpawnParams);
 	if (SelectedIcon) {
 		SelectedIcon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("rootSocket"));
-		SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
+		//SelectedIcon->ChangeMaterialColour(FVector4d(5.f, 40.f, 30.f, 0.5f));
 	}
 }
 

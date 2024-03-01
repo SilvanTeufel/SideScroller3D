@@ -130,6 +130,9 @@ void AExtendedCameraBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 32);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 33);
 
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 321);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 331);
+		
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 322);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 333);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 3222);
@@ -350,6 +353,19 @@ void AExtendedCameraBase::OnSimulatedMouseClick()
 	}
 }
 
+void AExtendedCameraBase::JoyStickMoveCamDependent(ACameraControllerBase* CameraControllerBase, float Value, int Angles[4])
+{
+	if (YawValue == CameraAngles[Angles[0]]) { //  && !SwitchAxis
+		CameraControllerBase->JoystickRunUnit(FVector2D(Value, 0.f));
+	}else if (YawValue == CameraAngles[Angles[1]]) { //  && !SwitchAxis
+		CameraControllerBase->JoystickRunUnit(FVector2D(Value*(-1), 0.f));
+	}else if (YawValue == CameraAngles[Angles[2]]) { //  && SwitchAxis
+		CameraControllerBase->JoystickRunUnit(FVector2D(0.f, Value*(-1)));
+	}else if (YawValue == CameraAngles[Angles[3]]) { //  && SwitchAxis
+		CameraControllerBase->JoystickRunUnit(FVector2D(0.f, Value));
+	}
+}
+
 void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& InputActionValue, int32 NewCameraState)
 {
 	ACameraControllerBase* CameraControllerBase = Cast<ACameraControllerBase>(GetController());
@@ -424,18 +440,10 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					FindUButtonWithMouseHover();
 				}else
 				{
-					if (YawValue == CameraAngles[0] && !SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-						//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-					}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-						//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-					}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-					}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+					if(!SwitchAxis)
+					{
+						int Angles[4] = {0, 2, 1, 3};
+						JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 					}
 				
 					if(CameraControllerBase->YIsPressed)
@@ -466,20 +474,11 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					FindUButtonWithMouseHover();
 				}else
 				{
-					if (YawValue == CameraAngles[1] && !SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-						//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-					}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-						//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-					}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-					}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-						CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-						//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+					if(SwitchAxis)
+					{
+						int Angles[4] = {1, 3, 2, 0};
+						JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 					}
-
 					if(JoyStickY > 0.f)
 						for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 						{
@@ -494,9 +493,20 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				// Gamepad A Pressed
 				//CameraControllerBase->APressed();
-
 				//UE_LOG(LogTemp, Warning, TEXT("True!"));
-				if(CameraControllerBase->RShoulder2Pressed)
+				CameraControllerBase->AIsPressed = true;
+
+				if(CameraControllerBase->RShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating ThrowAbilityID for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(SelectedUnit->ThrowAbilityID, SelectedUnit, SelectedUnit->ThrowAbilities);
+						}
+					}
+				}else if(CameraControllerBase->RShoulder2Pressed)
 				{
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 					{
@@ -511,8 +521,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 							}
 						}
 					}
-				}
-				if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
+				}else if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed && !CameraControllerBase->BIsPressed)
 				{
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 					{
@@ -528,12 +537,24 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				// Gamepad A Released
 				CameraControllerBase->AReleased();
-				
+				CameraControllerBase->AIsPressed = false;
 			} break;
 		case 24:
 			{
 				// Gamepad B Pressed
-				if(CameraControllerBase->RShoulder2Pressed)
+				CameraControllerBase->BIsPressed = true;
+
+				if(CameraControllerBase->RShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating AttackAbilityID for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(SelectedUnit->AttackAbilityID, SelectedUnit, SelectedUnit->AttackAbilities);
+						}
+					}
+				}else if(CameraControllerBase->RShoulder2Pressed)
 				{
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
 					{
@@ -547,38 +568,52 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 							}
 						}
 					}
+				}else
+				{
+					CameraControllerBase->EPressed();
 				}
 			} break;
 		case 25:
 			{
 				// Gamepad B Released
-				if(!CameraControllerBase->RShoulder2Pressed)
-				CameraControllerBase->EPressed();
+				CameraControllerBase->BIsPressed = false;
+				
 			} break;
 		case 26:
 			{
-				if(CameraControllerBase->LShoulder2Pressed)
+				CameraControllerBase->XIsPressed = true;
+
+				if(CameraControllerBase->RShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Activating OffensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
+							OnAbilityInputDetected(SelectedUnit->OffensiveAbilityID, SelectedUnit, SelectedUnit->OffensiveAbilities);
+						}
+					}
+				}else if(CameraControllerBase->LShoulder2Pressed)
 				{
 					OnSimulatedMouseClick();
 				}else
 				{
+					// ScatterMine
 					CameraControllerBase->CPressed();
 				}
 				// Gamepad X
 			} break;
 		case 27:
 			{
-			
+				CameraControllerBase->XIsPressed = false;
 			} break;
 		case 28:
 			{
 				// Gamepad Y
-		
-				
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed YYYY!!!!"));
-				CameraControllerBase->YIsPressed = true;
 
-				if(CameraControllerBase->RShoulder2Pressed)
+				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed!"));
+				CameraControllerBase->YIsPressed = true;
+				if(CameraControllerBase->RShoulderPressed)
 				{
 
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
@@ -589,16 +624,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 							OnAbilityInputDetected(SelectedUnit->DefensiveAbilityID, SelectedUnit, SelectedUnit->DefensiveAbilities);
 						}
 					}
-				}
-				
-				//CameraControllerBase->QPressed();
-			} break;
-		case 29:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
-				CameraControllerBase->YIsPressed = false;
-				
-				if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
+				}else if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
 				{
 
 					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
@@ -610,6 +636,13 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 						}
 					}
 				}
+				
+				//CameraControllerBase->QPressed();
+			} break;
+		case 29:
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
+				CameraControllerBase->YIsPressed = false;
 				//CameraControllerBase->QReleased();
 				
 			} break;
@@ -619,15 +652,28 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				UE_LOG(LogTemp, Warning, TEXT("Joystick 2 X"));
 				float FValue = InputActionValue.Get<float>();
 				JoyStick2X = FValue;
-				if(FValue >= 1)
+				if(CameraControllerBase->RShoulder2Pressed)
 				{
-					CameraControllerBase->CamIsRotatingLeft = false;
-					CameraControllerBase->CamIsRotatingRight = true;
-				}
-				else if(FValue <= -1)
+					if(FValue >= 1)
+					{
+						SwitchAxis = true;
+					}
+					else if(FValue <= -1)
+					{
+						SwitchAxis = false;
+					}
+				}else
 				{
-					CameraControllerBase->CamIsRotatingRight = false;
-					CameraControllerBase->CamIsRotatingLeft = true;
+					if(FValue >= 1)
+					{
+						CameraControllerBase->CamIsRotatingLeft = false;
+						CameraControllerBase->CamIsRotatingRight = true;
+					}
+					else if(FValue <= -1)
+					{
+						CameraControllerBase->CamIsRotatingRight = false;
+						CameraControllerBase->CamIsRotatingLeft = true;
+					}
 				}
 			} break;
 		case 31:
@@ -635,6 +681,8 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				//  Joystick 2 Y
 				float FValue = InputActionValue.Get<float>();
 				JoyStick2Y = FValue;
+
+		
 				if(FValue >= 1)
 				{
 					
@@ -644,25 +692,33 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					CameraControllerBase->ZoomInToPosition = true;
 					CameraControllerBase->ZoomOutToPosition = false;
 				}
+			
 
 
 			} break;
 		case 32:
 			{
-				//  L Shoulder
-				CameraControllerBase->SetAxis();
-				SwitchAxis = !SwitchAxis;
-				CameraControllerBase->CamIsRotatingRight = false;
-				CameraControllerBase->CamIsRotatingLeft = true;
-	
+				//  L Shoulder	
+				CameraControllerBase->LShoulderPressed = true;
+				UE_LOG(LogTemp, Warning, TEXT("LShoulderPressed"));
 			} break;
 		case 33:
 			{
 				//  R Shoulder
-				CameraControllerBase->SetAxis();
-				SwitchAxis = !SwitchAxis;
-				CameraControllerBase->CamIsRotatingLeft = false;
-				CameraControllerBase->CamIsRotatingRight = true;
+				CameraControllerBase->RShoulderPressed = true;
+				UE_LOG(LogTemp, Warning, TEXT("RShoulderPressed"));
+			} break;
+		case 321:
+			{
+				//  L Shoulder	
+				CameraControllerBase->LShoulderPressed = false;
+				UE_LOG(LogTemp, Warning, TEXT("LShoulderReleased"));
+			} break;
+		case 331:
+			{
+				//  R Shoulder
+				CameraControllerBase->RShoulderPressed = false;
+				UE_LOG(LogTemp, Warning, TEXT("RShoulderReleased"));
 			} break;
 		case 322:
 			{
@@ -741,75 +797,40 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		case 38:
 			{
 				float IValue = -1.0f;
-			
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+				if(!SwitchAxis)
+				{
+					int Angles[4] = {0, 2, 1, 3};
+					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
 			} break;
 		case 39:
 			{
 				float IValue = 1.0f;
-				
-				if (YawValue == CameraAngles[0] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[2] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[1] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
-				}else if (YawValue == CameraAngles[3] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
+				if(!SwitchAxis)
+				{
+					int Angles[4] = {0, 2, 1, 3};
+					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
 				
 			} break;
 		case 40:
 			{
 				float IValue = 1.0f;
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+
+				if(SwitchAxis)
+				{
+					int Angles[4] = {1, 3, 2, 0};
+					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
-				
 			} break;
 		case 41:
 			{
 				float IValue = -1.0f;
-				if (YawValue == CameraAngles[1] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue, 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2, 0.f, IValue));
-				}else if (YawValue == CameraAngles[3] && !SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(IValue*(-1), 0.f));
-					//CameraControllerBase->TripleJump(FVector(IValue*2*(-1), 0.f, IValue));
-				}else if (YawValue == CameraAngles[0] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2, IValue));
-				}else if (YawValue == CameraAngles[2] && SwitchAxis) {
-					CameraControllerBase->JoystickRunUnit(FVector2D(0.f, IValue*(-1)));
-					//CameraControllerBase->TripleJump(FVector(0.f, IValue*2*(-1), IValue));
+				if(SwitchAxis)
+				{
+					int Angles[4] = {1, 3, 2, 0};
+					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
-				
 			} break;
 		}
 		
