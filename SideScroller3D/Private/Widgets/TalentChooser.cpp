@@ -220,7 +220,7 @@ void UTalentChooser::InitializeSingleButton(const FString& ButtonName, UButton* 
 void UTalentChooser::HandleTalentButtonClicked(int32 ButtonIndex)
 {
     
-    UE_LOG(LogTemp, Warning, TEXT("HandleTalentButtonClicked!"));
+    //UE_LOG(LogTemp, Warning, TEXT("HandleTalentButtonClicked!"));
 
 }
 

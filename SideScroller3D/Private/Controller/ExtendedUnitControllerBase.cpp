@@ -154,13 +154,11 @@ void AExtendedUnitControllerBase::ExtendedUnitControlMachine(float DeltaSeconds)
 			{
 				ExtendedUnitBase->SetUnitState(UnitData::Idle);
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Pause!! "));
 			//CreateJumpColor(ExtendedUnitBase);
 		}
 		break;
 	case UnitData::TripleJump:
 		{
-			UE_LOG(LogTemp, Warning, TEXT("TripleJump!! "));
 			const FVector UnitLocation = ExtendedUnitBase->GetActorLocation();
 			
 			ExtendedUnitBase->SpawnGlider();
@@ -187,7 +185,7 @@ void AExtendedUnitControllerBase::ExtendedUnitControlMachine(float DeltaSeconds)
 		break;
 	case UnitData::Jump:
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Jump!! "));
+			//UE_LOG(LogTemp, Warning, TEXT("Jump!! "));
 			/*
 			CreateJumpColor(ExtendedUnitBase);
 

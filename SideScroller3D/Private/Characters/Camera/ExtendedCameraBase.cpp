@@ -64,7 +64,6 @@ AExtendedCameraBase::AExtendedCameraBase(const FObjectInitializer& ObjectInitial
 void AExtendedCameraBase::BeginPlay()
 {
 	// Call the base class BeginPlay
-	UE_LOG(LogTemp, Warning, TEXT("ExtendedCameraBase BEGINPLAY!!!!! "));
 	Super::BeginPlay();
 }
 
@@ -92,27 +91,47 @@ void AExtendedCameraBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	{
 		check(EnhancedInputComponentBase);
 		const FGameplayTags& GameplayTags = FGameplayTags::Get();
+
+		/*
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Q_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 22); 
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Q_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 23);
 		
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Space_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 7);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Space_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 8);
-
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Alt_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 9);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Ctrl_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 10);
-
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 2);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 0);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_W_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 24);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_W_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 25);
 		
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_R_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 13);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_E_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 26);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_E_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 27);
+		
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_A_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 28);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_A_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 29);
 
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_F_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 14);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_C_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 15);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 16);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Q_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 19);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 32);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 33);
+
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_D_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 34);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_D_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 35);
+
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Space_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 36);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Space_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 37);
+
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Ctrl_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 36);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Ctrl_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 37);
+		
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Alt_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 38);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Alt_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 39);
+
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_R_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 48);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_T_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 49);
+		
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_F_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 22);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_C_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 24);
+		*/
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_S_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 0);
 		
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Joystick_1_X, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 20);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Joystick_1_Y, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 21);
 		
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Gamepad_A_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 22);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Gamepad_A_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 22); 
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Gamepad_A_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 23);
 		
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Gamepad_B_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 24);
@@ -130,24 +149,27 @@ void AExtendedCameraBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 32);
 		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 33);
 
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 321);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 331);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 34);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 35);
 		
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 322);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 333);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 3222);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 3333);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 36);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 37);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 38);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Right_Shoulder_2_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 39);
 		
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 34);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 35);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 40);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Left_Trigger_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 41);
 
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Tab_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 36);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Tab_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 37);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Tab_Pressed, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 42);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Tab_Released, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 43);
 
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Left, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 38);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Right, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 39);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Up, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 40);
-		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Down, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 41);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Left, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 44);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Right, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 45);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Left, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 46);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Right, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 47);
+
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Up, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 48);
+		EnhancedInputComponentBase->BindActionByTag(InputConfig, GameplayTags.InputTag_Arrow_Down, ETriggerEvent::Triggered, this, &AExtendedCameraBase::SwitchControllerStateMachine, 49);
 	}
 }
 
@@ -161,7 +183,6 @@ void AExtendedCameraBase::SetExtendedUserWidget(AUnitBase* SelectedActor)
 
 	if(SelectedActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Visible Widget"));
 		if (TalentBar) {
 			TalentBar->SetVisibility(ESlateVisibility::Visible);
 			TalentBar->SetOwnerActor(SelectedActor);
@@ -175,7 +196,6 @@ void AExtendedCameraBase::SetExtendedUserWidget(AUnitBase* SelectedActor)
 		
 	}else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Collapsed Widget"));
 		TalentBar->SetVisibility(ESlateVisibility::Collapsed);
 		AbilityBar->SetVisibility(ESlateVisibility::Collapsed);
 	}
@@ -324,7 +344,6 @@ void AExtendedCameraBase::FindUButtonWithMouseHover()
 		UButton* HitButton = TalentBar->GetButtonUnderCursor();
 		if (HitButton)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("FOUND BUTTON Talent!"));
 			FocusedButton = HitButton;
 			// Do something with the HitButton
 		}
@@ -336,7 +355,6 @@ void AExtendedCameraBase::FindUButtonWithMouseHover()
 		UButton* HitButton = AbilityBar->GetButtonUnderCursor();
 		if (HitButton)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("FOUND BUTTON Ability!"));
 			FocusedButton = HitButton;
 			// Do something with the HitButton
 		}
@@ -375,55 +393,10 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		if(!CameraControllerBase->IsStrgPressed)
 		switch (NewCameraState)
 		{
-		case 3:
+		case 0:
 			{
-				CameraControllerBase->APressed();
-			}break;
-		case 7:
-			{
-				CameraControllerBase->ZoomInToPosition = false;
-				CameraControllerBase->ZoomOutToPosition = true;
-			} break;
-		case 8:
-			{
-				CameraControllerBase->ZoomInToPosition = true;
-				CameraControllerBase->ZoomOutToPosition = false;
-			} break;
-		case 9:
-			{
-				CameraControllerBase->CamIsRotatingLeft = false;
-				CameraControllerBase->CamIsRotatingRight = true;
-			} break;
-		case 10:
-			{
-
-				CameraControllerBase->CamIsRotatingRight = false;
-				CameraControllerBase->CamIsRotatingLeft = true;
-			} break;
-		case 19:
-			{
-				// Q Released
-				//CameraControllerBase->QReleased();
-			} break;
-		case 13:
-			{
-				// R Pressed
-				//CameraControllerBase->RPressed();
-			} break;
-		case 14:
-			{
-				// F Pressed
-				// CameraControllerBase->FPressed();
-			} break;
-		case 15:
-			{
-				// C Pressed
-				// CameraControllerBase->CPressed();
-			} break;
-		case 16:
-			{
-				// S Pressed
-					CameraControllerBase->SReleased();
+				// Switch Weapon // Joystick 1 Presed
+				CameraControllerBase->SReleased();
 			} break;
 		case 20:
 			{
@@ -452,7 +425,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 						{
 							if (SelectedUnit)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("Activating AbilityTwo for unit: %s"), *SelectedUnit->GetName());
+								//UE_LOG(LogTemp, Warning, TEXT("Activating AbilityTwo for unit: %s"), *SelectedUnit->GetName());
 								OnAbilityInputDetected(EGASAbilityInputID::AbilityTwo, SelectedUnit, SelectedUnit->DefaultAbilities);
 							}
 						}
@@ -479,14 +452,6 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 						int Angles[4] = {1, 3, 2, 0};
 						JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 					}
-					if(JoyStickY > 0.f)
-						for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
-						{
-							if (SelectedUnit)
-							{
-								OnAbilityInputDetected(EGASAbilityInputID::AbilityThree, SelectedUnit, SelectedUnit->DefaultAbilities);
-							}
-						}
 				}
 			} break;
 		case 22:
@@ -502,8 +467,17 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating ThrowAbilityID for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating ThrowAbilityID for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(SelectedUnit->ThrowAbilityID, SelectedUnit, SelectedUnit->ThrowAbilities);
+						}
+					}
+				}else if(CameraControllerBase->LShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							OnAbilityInputDetected(EGASAbilityInputID::AbilitySix, SelectedUnit, SelectedUnit->DefaultAbilities);
 						}
 					}
 				}else if(CameraControllerBase->RShoulder2Pressed)
@@ -515,7 +489,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 							AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(SelectedUnit);
 							if (ExtendedUnitBase)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("TabNextUnitToChase!"));
+								//UE_LOG(LogTemp, Warning, TEXT("TabNextUnitToChase!"));
 								ExtendedUnitBase->TabNextUnitToChase();
 								
 							}
@@ -527,7 +501,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFour for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating AbilityFour for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(EGASAbilityInputID::AbilityFour, SelectedUnit, SelectedUnit->DefaultAbilities);
 						}
 					}
@@ -550,7 +524,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating AttackAbilityID for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating AttackAbilityID for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(SelectedUnit->AttackAbilityID, SelectedUnit, SelectedUnit->AttackAbilities);
 						}
 					}
@@ -563,7 +537,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 							AExtendedUnitBase* ExtendedUnitBase = Cast<AExtendedUnitBase>(SelectedUnit);
 							if (ExtendedUnitBase)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("TabPrevUnitToChase!"));
+								//UE_LOG(LogTemp, Warning, TEXT("TabPrevUnitToChase!"));
 								ExtendedUnitBase->TabPrevUnitToChase();
 							}
 						}
@@ -589,8 +563,17 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating OffensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating OffensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(SelectedUnit->OffensiveAbilityID, SelectedUnit, SelectedUnit->OffensiveAbilities);
+						}
+					}
+				}else if(CameraControllerBase->LShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							OnAbilityInputDetected(EGASAbilityInputID::AbilityFive, SelectedUnit, SelectedUnit->DefaultAbilities);
 						}
 					}
 				}else if(CameraControllerBase->LShoulder2Pressed)
@@ -611,7 +594,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				// Gamepad Y
 
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed!"));
+				//UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Pressed!"));
 				CameraControllerBase->YIsPressed = true;
 				if(CameraControllerBase->RShoulderPressed)
 				{
@@ -620,8 +603,17 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating DefensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating DefensiveAbilityID for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(SelectedUnit->DefensiveAbilityID, SelectedUnit, SelectedUnit->DefensiveAbilities);
+						}
+					}
+				}else if(CameraControllerBase->LShoulderPressed)
+				{
+					for (AUnitBase* SelectedUnit : CameraControllerBase->SelectedUnits)
+					{
+						if (SelectedUnit)
+						{
+							OnAbilityInputDetected(EGASAbilityInputID::AbilityThree, SelectedUnit, SelectedUnit->DefaultAbilities);
 						}
 					}
 				}else if(!CameraControllerBase->LShoulder2Pressed && !CameraControllerBase->RShoulder2Pressed)
@@ -631,7 +623,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					{
 						if (SelectedUnit)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Activating AbilityOne for unit: %s"), *SelectedUnit->GetName());
+							//UE_LOG(LogTemp, Warning, TEXT("Activating AbilityOne for unit: %s"), *SelectedUnit->GetName());
 							OnAbilityInputDetected(EGASAbilityInputID::AbilityOne, SelectedUnit, SelectedUnit->DefaultAbilities);
 						}
 					}
@@ -641,7 +633,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			} break;
 		case 29:
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
+				//UE_LOG(LogTemp, Warning, TEXT("Gamepad Y Released"));
 				CameraControllerBase->YIsPressed = false;
 				//CameraControllerBase->QReleased();
 				
@@ -649,7 +641,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 		case 30:
 			{
 				// Joystick 2 X
-				UE_LOG(LogTemp, Warning, TEXT("Joystick 2 X"));
+				//UE_LOG(LogTemp, Warning, TEXT("Joystick 2 X"));
 				float FValue = InputActionValue.Get<float>();
 				JoyStick2X = FValue;
 				if(CameraControllerBase->RShoulder2Pressed)
@@ -700,30 +692,30 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 			{
 				//  L Shoulder	
 				CameraControllerBase->LShoulderPressed = true;
-				UE_LOG(LogTemp, Warning, TEXT("LShoulderPressed"));
+				//UE_LOG(LogTemp, Warning, TEXT("LShoulderPressed"));
 			} break;
 		case 33:
 			{
 				//  R Shoulder
 				CameraControllerBase->RShoulderPressed = true;
-				UE_LOG(LogTemp, Warning, TEXT("RShoulderPressed"));
+				//UE_LOG(LogTemp, Warning, TEXT("RShoulderPressed"));
 			} break;
-		case 321:
+		case 34:
 			{
 				//  L Shoulder	
 				CameraControllerBase->LShoulderPressed = false;
-				UE_LOG(LogTemp, Warning, TEXT("LShoulderReleased"));
+				//UE_LOG(LogTemp, Warning, TEXT("LShoulderReleased"));
 			} break;
-		case 331:
+		case 35:
 			{
 				//  R Shoulder
 				CameraControllerBase->RShoulderPressed = false;
-				UE_LOG(LogTemp, Warning, TEXT("RShoulderReleased"));
+				//UE_LOG(LogTemp, Warning, TEXT("RShoulderReleased"));
 			} break;
-		case 322:
+		case 36:
 			{
 				//  L Shoulder 2
-				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2"));
+				//UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2"));
 				CameraControllerBase->LShoulder2Pressed = true;
 
 				if(!CameraControllerBase->RShoulder2Pressed)
@@ -742,18 +734,18 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					CameraControllerBase->RPressed();
 			
 			} break;
-		case 333:
+		case 37:
 			{
 				//  R Shoulder 2
-				UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2"));
+				//UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2"));
 				CameraControllerBase->RShoulder2Pressed = true;
 				if(CameraControllerBase->RShoulder2Pressed && CameraControllerBase->LShoulder2Pressed )
 					CameraControllerBase->RPressed();
 			} break;
-		case 3222:
+		case 38:
 			{
 				//  L Shoulder 2
-				UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2 Released"));
+				//UE_LOG(LogTemp, Warning, TEXT("L Shoulder 2 Released"));
 				CameraControllerBase->LShoulder2Pressed = false;
 
 				
@@ -770,31 +762,31 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				}
 				
 			} break;
-		case 3333:
+		case 39:
 			{
 				//  R Shoulder 2
-				UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2 Released"));
+				//UE_LOG(LogTemp, Warning, TEXT("R Shoulder 2 Released"));
 				CameraControllerBase->RShoulder2Pressed = false;
 			} break;
-		case 34:
+		case 40:
 			{
-				UE_LOG(LogTemp, Warning, TEXT("L Trigger Pressed"));
+				//UE_LOG(LogTemp, Warning, TEXT("L Trigger Pressed"));
 				CameraControllerBase->SetDropJumpMine(true);
 			} break;
-		case 35:
+		case 41:
 			{
-				UE_LOG(LogTemp, Warning, TEXT("L Trigger Released"));
+				//UE_LOG(LogTemp, Warning, TEXT("L Trigger Released"));
 				CameraControllerBase->SetDropJumpMine(false);
 			} break;
-		case 36:
+		case 42:
 			{
 				ShowControlWidget();
 			} break;
-		case 37:
+		case 43:
 			{
 				HideControlWidget();
 			} break;
-		case 38:
+		case 44:
 			{
 				float IValue = -1.0f;
 				if(!SwitchAxis)
@@ -803,7 +795,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
 			} break;
-		case 39:
+		case 45:
 			{
 				float IValue = 1.0f;
 				if(!SwitchAxis)
@@ -813,7 +805,7 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 				}
 				
 			} break;
-		case 40:
+		case 46:
 			{
 				float IValue = 1.0f;
 
@@ -823,13 +815,35 @@ void AExtendedCameraBase::SwitchControllerStateMachine(const FInputActionValue& 
 					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
 				}
 			} break;
-		case 41:
+		case 47:
 			{
 				float IValue = -1.0f;
 				if(SwitchAxis)
 				{
 					int Angles[4] = {1, 3, 2, 0};
 					JoyStickMoveCamDependent(CameraControllerBase, IValue, Angles);
+				}
+			} break;
+		case 48:
+			{
+				if(CameraControllerBase->RShoulder2Pressed)
+				{
+						SwitchAxis = true;
+				}else
+				{
+						CameraControllerBase->CamIsRotatingLeft = false;
+						CameraControllerBase->CamIsRotatingRight = true;
+				}
+			} break;
+		case 49:
+			{
+				if(CameraControllerBase->RShoulder2Pressed)
+				{
+						SwitchAxis = false;
+				}else
+				{
+						CameraControllerBase->CamIsRotatingRight = false;
+						CameraControllerBase->CamIsRotatingLeft = true;
 				}
 			} break;
 		}

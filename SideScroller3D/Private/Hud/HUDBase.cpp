@@ -186,7 +186,6 @@ void AHUDBase::Tick(float DeltaSeconds)
 void AHUDBase::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("HUD BEGINPLAY!!!!! "));
 	GetAllMouseBots();
 	GetAllUnits();
 }
@@ -201,7 +200,6 @@ void AHUDBase::AssignNewHighestIndex(AUnitBase* Unit)
 
 void AHUDBase::GetAllUnits()
 {
-	UE_LOG(LogTemp, Warning, TEXT("GetAllUnits!!!!! "));
 	TArray <AActor*> AllActors;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitBase::StaticClass(), AllActors);
@@ -214,7 +212,6 @@ void AHUDBase::GetAllUnits()
 		{
 			if(NewUnitBase->TeamId == 1)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Found Main Unit!!!!!"));
 				AssignNewHighestIndex(NewUnitBase);
 				NewUnitBase->SetSelected();
 				SelectedUnits.Add(NewUnitBase);

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Characters/Unit/UnitBase.h"
+#include "Engine/StaticMeshActor.h"
 #include "Hud/HUDBase.h"
 #include "Hud/HUDBase.h"
 #include "UnitControllerBase.generated.h"
@@ -150,5 +151,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,  Category = RTSUnitTemplate)
 		bool ProjectileSpawned = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category = RTSUnitTemplate)
+	UClass* SurfaceClass = AStaticMeshActor::StaticClass();
 };
 

@@ -1,6 +1,7 @@
 // Copyright 2023 Silvan Teufel / Teufel-Engineering.com All Rights Reserved.
 
 #include "Widgets/DamageIndicator.h"
+#include "Misc/Paths.h"
 #include "Characters/Unit/UnitBase.h"
 
 void UDamageIndicator::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

@@ -15,7 +15,6 @@
 void ACameraBase::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("CameraBase BEGINPLAY!!!!! "));
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		

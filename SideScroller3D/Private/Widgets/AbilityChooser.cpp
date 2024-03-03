@@ -32,8 +32,6 @@ void UAbilityChooser::UpdateAbilityDisplay()
 {
     if (OwnerAbilityUnit)
     {
-        UE_LOG(LogTemp, Log, TEXT("Found OwnerAbilityUnit!"));
-        UE_LOG(LogTemp, Log, TEXT("Text D : %d"), static_cast<int32>(OwnerAbilityUnit->DefensiveAbilityID));
         if (OffensiveAbilityText)
         {
             OffensiveAbilityText->SetText(FText::FromString(FString::FromInt(static_cast<int32>(OwnerAbilityUnit->OffensiveAbilityID))));

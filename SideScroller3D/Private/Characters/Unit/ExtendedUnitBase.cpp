@@ -442,16 +442,22 @@ bool AExtendedUnitBase::TabNextUnitToChase()
 	
 	//int NewIndex = 0;
 	bool RValue = false;
-
-	UE_LOG(LogTemp, Warning, TEXT("UnitsToChase.Num(): %d"), UnitsToChase.Num());
 	if(UnitToChaseIndex >= UnitsToChase.Num()-1)
 		UnitToChaseIndex = 0;
+	else if(UnitToChaseIndex <= 0) // Additional safety check
+		UnitToChaseIndex = UnitsToChase.Num() - 1;
 	
 	for(int i = UnitToChaseIndex; i < UnitsToChase.Num(); i++)
 	{
+
+		checkf(i >= 0 && i < UnitsToChase.Num(), TEXT("TabNextUnitToChase UnitToChaseIndex out of bounds: %d, Array Size: %d"), i, UnitsToChase.Num());
+
+		// Debug logging
+		UE_LOG(LogTemp, Warning, TEXT("TabNextUnitToChase Accessing index: %d, Array size: %d"), i, UnitsToChase.Num());
+
+		
 		if(UnitsToChase[i] && UnitsToChase[i] != UnitToChase && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
 		{
-				UE_LOG(LogTemp, Warning, TEXT("Tabbed to the Next Unit!"));
 				UnitToChaseIndex = i;
 				UnitToChase->SetDeselected();
 				UnitToChase = UnitsToChase[UnitToChaseIndex];
@@ -483,15 +489,21 @@ bool AExtendedUnitBase::TabPrevUnitToChase()
 	//int NewIndex = 0;
 	bool RValue = false;
 
-	UE_LOG(LogTemp, Warning, TEXT("UnitsToChase.Num(): %d"), UnitsToChase.Num());
 	if(UnitToChaseIndex <= 0)
-		UnitToChaseIndex = UnitsToChase.Num()-1;
+		UnitToChaseIndex = UnitsToChase.Num() - 1;
+	else if (UnitToChaseIndex >= UnitsToChase.Num()) // Additional safety check
+		UnitToChaseIndex = UnitsToChase.Num() - 1;
 	
 	for(int i = UnitToChaseIndex; i >= 0; i--)
 	{
+		
+		checkf(i >= 0 && i < UnitsToChase.Num(), TEXT("TabPrevUnitToChase UnitToChaseIndex out of bounds: %d, Array Size: %d"), i, UnitsToChase.Num());
+
+		// Debug logging
+		UE_LOG(LogTemp, Warning, TEXT("TabPrevUnitToChase Accessing index: %d, Array size: %d"), i, UnitsToChase.Num());
+
 		if(UnitsToChase[i] && UnitsToChase[i] != UnitToChase && UnitsToChase[i]->GetUnitState() != UnitData::Dead)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Tabbed to the Next Unit!"));
 			UnitToChaseIndex = i;
 			UnitToChase->SetDeselected();
 			UnitToChase = UnitsToChase[UnitToChaseIndex];

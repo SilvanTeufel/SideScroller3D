@@ -11,7 +11,6 @@ ACameraControllerBase::ACameraControllerBase()
 
 void ACameraControllerBase::BeginPlay()
 {
-	UE_LOG(LogTemp, Warning, TEXT("CameraControllerBase BEGINPLAY!!!!! "));
 	Super::BeginPlay();
 	HUDBase = Cast<AHUDBase>(GetHUD());
 	CameraBase = Cast<ACameraBase>(GetPawn());

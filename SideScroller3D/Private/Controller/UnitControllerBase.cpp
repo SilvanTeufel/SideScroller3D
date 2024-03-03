@@ -18,6 +18,7 @@
 #include "Components/CapsuleComponent.h"
 #include "NavigationSystem.h"
 #include "Controller/ControllerBase.h"
+#include "Engine/StaticMeshActor.h"
 #include "Net/UnrealNetwork.h"
 
 AUnitControllerBase::AUnitControllerBase()
@@ -823,8 +824,8 @@ void AUnitControllerBase::SetPatrolCloseLocation(AUnitBase* UnitBase)
 		FVector(UnitBase->NextWaypoint->PatrolCloseOffset.X, UnitBase->NextWaypoint->PatrolCloseOffset.Y, 0)));
 
 		// Now adjust the Z-coordinate of PatrolCloseLocation to ensure it's above terrain
-		const FVector Start = FVector(UnitBase->RandomPatrolLocation.X, UnitBase->RandomPatrolLocation.Y, UnitBase->RandomPatrolLocation.Z + 1000.f);  // Start from a point high above the PatrolCloseLocation
-		const FVector End = FVector(UnitBase->RandomPatrolLocation.X, UnitBase->RandomPatrolLocation.Y, UnitBase->RandomPatrolLocation.Z - 1000.f);  // End at a point below the PatrolCloseLocation
+		const FVector Start = FVector(UnitBase->RandomPatrolLocation.X, UnitBase->RandomPatrolLocation.Y, UnitBase->RandomPatrolLocation.Z + 100.f);  // Start from a point high above the PatrolCloseLocation
+		const FVector End = FVector(UnitBase->RandomPatrolLocation.X, UnitBase->RandomPatrolLocation.Y, UnitBase->RandomPatrolLocation.Z - 100.f);  // End at a point below the PatrolCloseLocation
 
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
@@ -835,8 +836,9 @@ void AUnitControllerBase::SetPatrolCloseLocation(AUnitBase* UnitBase)
 		
 			AActor* HitActor = HitResult.GetActor();
 
+			
 			// Check if we hit the landscape
-			//if (HitActor && HitActor->IsA(ALandscape::StaticClass()) )
+			if (HitActor && HitActor->IsA(SurfaceClass))
 			{
 				// Hit landscape
 				// Set the Z-coordinate accordingly

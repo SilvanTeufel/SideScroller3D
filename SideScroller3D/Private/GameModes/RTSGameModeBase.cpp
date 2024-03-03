@@ -17,7 +17,6 @@
 void ARTSGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("ARTSGameModeBase BEGINPLAY!!!!! "));
 	FTimerHandle TimerHandle;
 	SetTeamIds();
 	if(!DisableSpawn)SetupTimerFromDataTable_Implementation(FVector(0.f), nullptr);

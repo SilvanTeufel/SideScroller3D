@@ -2,6 +2,8 @@
 
 
 #include "Actors/Projectile.h"
+
+#include "Characters/Unit/ExtendedUnitBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Characters/Unit/UnitBase.h"
@@ -218,10 +220,20 @@ void AProjectile::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedC
 	if(OtherActor)
 	{
 		AUnitBase* UnitToHit = Cast<AUnitBase>(OtherActor);
+		AExtendedUnitBase* ExtendedUnitToHit = Cast<AExtendedUnitBase>(OtherActor);
+		
 		if(UnitToHit && UnitToHit->GetUnitState() == UnitData::Dead)
 		{
 			ImpactEvent();
 			DestroyProjectileWithDelay();
+		}else if(ExtendedUnitToHit && ExtendedUnitToHit->Shield && ExtendedUnitToHit->Shield->IsActive && ExtendedUnitToHit->Shield->GetHitCounter() >= 1 && ExtendedUnitToHit->TeamId != TeamId)
+		{
+			ExtendedUnitToHit->Shield->HitCounter--;
+				
+			if(ExtendedUnitToHit->Shield->HitCounter == 0)
+				ExtendedUnitToHit->ToggleShield();
+				
+			Destroy(true, false);
 		}else if(UnitToHit && UnitToHit->TeamId == TeamId && BouncedBack && IsHealing)
 		{
 			ImpactEvent();

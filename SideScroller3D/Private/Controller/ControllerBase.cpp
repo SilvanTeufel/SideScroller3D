@@ -20,7 +20,6 @@ AControllerBase::AControllerBase() {
 
 
 void AControllerBase::BeginPlay() {
-		UE_LOG(LogTemp, Warning, TEXT("ControllerBase BEGINPLAY!!!!! "));
 		HUDBase = Cast<AHUDBase>(GetHUD());
 		CameraBase = Cast<ACameraBase>(GetPawn());
 }
