@@ -5,7 +5,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Characters/Unit/UnitBase.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Components/StaticMeshComponent.h"
 #include "Characters/Unit/ExtendedUnitBase.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 AScatterBall::AScatterBall()
@@ -15,6 +18,8 @@ AScatterBall::AScatterBall()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // QueryAndPhysics
+	Mesh->SetCollisionProfileName(TEXT("Trigger")); // Kollisionsprofil festlegen
+	Mesh->SetGenerateOverlapEvents(true); // Überlappungsevents aktivieren
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Engine/BasicShapes/Sphere"));
 	
@@ -22,13 +27,6 @@ AScatterBall::AScatterBall()
 	{
 		Mesh->SetStaticMesh(SphereMeshAsset.Object);
 	}
-
-	TriggerCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Is ScatterBall Capsule"));
-	TriggerCapsule->InitCapsuleSize(1.f, 1.f);;
-	TriggerCapsule->SetCollisionProfileName(TEXT("Trigger"));
-	TriggerCapsule->SetupAttachment(RootComponent);
-	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AScatterBall::OnOverlapBegin); 
-
 }
 
 // Called when the game starts or when spawned
@@ -82,7 +80,8 @@ void AScatterBall::Init(float BallDamage, float BallScale, bool XSpeedIsPos, boo
 				
 				if(Material)
 				Mesh->SetMaterial(0, Material);
-				
+
+				Mesh->OnComponentBeginOverlap.AddDynamic(this, &AScatterBall::OnOverlapBegin); 
 				if(XSpeedIsPos)
 					SpeedX = FMath::RandRange(5.f, 2.f);
 				else

@@ -11,10 +11,10 @@ AScatterMine::AScatterMine()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	//Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 	
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // QueryAndPhysics
+	//Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // QueryAndPhysics
 
 	TriggerCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Is DamageMani Capsule"));
 	TriggerCapsule->InitCapsuleSize(1.f, 1.0f);;

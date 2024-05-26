@@ -1,7 +1,7 @@
 // Copyright 2023 Silvan Teufel / Teufel-Engineering.com All Rights Reserved.
 
 #include "Characters/Unit/SpawnerUnit.h"
-
+#include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 
 void ASpawnerUnit::BeginPlay()

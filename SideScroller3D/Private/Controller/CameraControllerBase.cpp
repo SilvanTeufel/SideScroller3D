@@ -1,5 +1,8 @@
 // Copyright 2023 Silvan Teufel / Teufel-Engineering.com All Rights Reserved.
 #include "Controller/CameraControllerBase.h"
+#include "Engine/GameViewportClient.h" 
+#include "Engine/Engine.h"
+#include "UnrealClient.h"
 
 
 ACameraControllerBase::ACameraControllerBase()
@@ -42,9 +45,12 @@ void ACameraControllerBase::GetViewPortScreenSizes(int x)
 		}
 		break;
 	case 2:
+		if (GEngine && GEngine->GameViewport)
 		{
-			CameraBase->ScreenSizeX = GSystemResolution.ResX;
-			CameraBase->ScreenSizeY = GSystemResolution.ResY;
+			FViewport* Viewport = GEngine->GameViewport->Viewport;
+			FIntPoint Size = Viewport->GetSizeXY();
+			CameraBase->ScreenSizeX = Size.X;
+			CameraBase->ScreenSizeY = Size.Y;
 		}
 		break;
 	}

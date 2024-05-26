@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CameraBase.h" // Include the header file for ACameraBase
 #include <Components/Button.h>
+#include "Controller/CameraControllerBase.h"
 #include "ExtendedCameraBase.generated.h"
 
 /**
@@ -89,7 +90,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RTSUnitTemplate)
 	UButton* FocusedButton;
-
-
+	
 	void JoyStickMoveCamDependent(ACameraControllerBase* CameraControllerBase, float Value, int Angles[4]);
 };

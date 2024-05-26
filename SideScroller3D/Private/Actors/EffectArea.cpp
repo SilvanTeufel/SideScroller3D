@@ -1,9 +1,8 @@
 // Copyright 2023 Silvan Teufel / Teufel-Engineering.com All Rights Reserved.
 
 #include "Actors/EffectArea.h"
-
 #include "Net/UnrealNetwork.h"
-
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 AEffectArea::AEffectArea()

@@ -4,14 +4,17 @@
 #include "Actors/Shield.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
-
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
 // Sets default values
 AShield::AShield()
 {
     PrimaryActorTick.bCanEverTick = true;
     SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
     SphereMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); // QueryAndPhysics
-    SphereMesh->SetupAttachment(RootComponent);
+    //SphereMesh->SetupAttachment(RootComponent);
+    SetRootComponent(SphereMesh);
     static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Engine/BasicShapes/Sphere"));
     if (SphereMeshAsset.Succeeded())
     {
@@ -19,7 +22,7 @@ AShield::AShield()
         SphereMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
         SphereMesh->SetWorldScale3D(FVector(6.f));
 
-        static ConstructorHelpers::FObjectFinder<UMaterial>MaterialA(_T("Material'/SideScroller3D/SideScroller3D/Materials/M_Shield.M_Shield'"));
+        static ConstructorHelpers::FObjectFinder<UMaterial>MaterialA(_T("Material'/TopDownRTSTemplate/TopDownRTSTemplate/Materials/M_Shield.M_Shield'"));
 
         if (MaterialA.Object != NULL)
         {
@@ -28,7 +31,7 @@ AShield::AShield()
         }
 
 
-        static ConstructorHelpers::FObjectFinder<UMaterial>MaterialB(_T("Material'/SideScroller3D/SideScroller3D/Materials/M_Transparent.M_Transparent'"));
+        static ConstructorHelpers::FObjectFinder<UMaterial>MaterialB(_T("Material'/TopDownRTSTemplate/TopDownRTSTemplate/Materials/M_Transparent.M_Transparent'"));
 
         if (MaterialB.Object != NULL)
         {
